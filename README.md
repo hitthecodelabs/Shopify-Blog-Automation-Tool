@@ -1,0 +1,1 @@
+# Shopify-Blog-Automation-Tool
