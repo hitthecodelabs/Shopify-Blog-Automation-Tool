@@ -5,10 +5,7 @@ The Shopify Blog Automation Tool is a Python script designed to facilitate the a
 
 Useful References:
 - [Shopify API Documentation](https://shopify.dev/)
-- [Example Store Blog - News](https://www.bagbliss.dk/blogs/news)
-- [Example Store Blog - Apple Main Blog](https://www.bagbliss.dk/blogs/apple-main-blog)
 - [API Rate Limits](https://shopify.dev/docs/api/admin-rest#rate_limits)
-- [Shopify Admin](https://admin.shopify.com/store/14ddeb-2/settings/account)
 
 ## Features
 - **Retrieve Blog Details**: Fetch all blog entries from your Shopify store.
