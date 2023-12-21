@@ -13,7 +13,7 @@ Shopify Blog Manager is a Python script designed to automate and manage various 
 
 ```bash
 git clone https://github.com/hitthecodelabs/Shopify-Blog-Automation-Tool.git
-cd Shopify-Blog-Manager
+cd Shopify-Blog-Automation-Tool
 ```
 
 ## Usage
