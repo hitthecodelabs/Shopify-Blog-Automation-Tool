@@ -37,7 +37,7 @@ create_article("New Article", "John Doe", "News, Updates", "<p>Content of the ar
 ```
 
 ## Contributing
-Contributions to Shopify Blog Manager are welcome. Please ensure that your code adheres to the project's coding standards and include tests for new features or bug fixes.
+Contributions to Shopify-Blog-Automation-Tool are welcome. Please ensure that your code adheres to the project's coding standards and include tests for new features or bug fixes.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
