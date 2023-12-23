@@ -118,4 +118,24 @@ def get_articles(store_url, access_token, blog_id):
     
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def get_article_count(store_url, access_token, blog_id):
+    """
+    Retrieves the count of articles in a specified blog on the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP GET request to the Shopify API's article count endpoint for a specific blog. It is decorated with a retry mechanism which retries the request on encountering specific exceptions (like network-related errors) with exponential backoff.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - blog_id (str): The ID of the blog for which to retrieve the article count.
+
+    Returns:
+    - dict: A dictionary object containing the response data with the count of articles if successful.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 200, it raises an exception with the error code and text.
+
+    Usage:
+    - article_count = get_article_count('https://example.myshopify.com', 'your_access_token', '123456789')
+      print(article_count)  # Prints the count of articles in the specified blog.
+    """
     pass
