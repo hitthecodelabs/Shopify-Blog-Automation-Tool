@@ -94,6 +94,26 @@ def create_article(store_url, access_token, blog_id, title, author, tags, body_h
 
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def get_articles(store_url, access_token, blog_id):
+    """
+    Retrieves all articles from a specified blog in the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP GET request to the Shopify API's articles endpoint for a specific blog. It is decorated with a retry mechanism which retries the request on encountering specific exceptions (like network-related errors) with exponential backoff.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - blog_id (str): The ID of the blog from which to retrieve articles.
+
+    Returns:
+    - dict: A dictionary object containing the response data with details of all articles if successful.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 200, it raises an exception with the error code and text.
+
+    Usage:
+    - articles = get_articles('https://example.myshopify.com', 'your_access_token', '123456789')
+      print(articles)  # Prints the list of articles retrieved from the specified blog.
+    """
     pass
     
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
