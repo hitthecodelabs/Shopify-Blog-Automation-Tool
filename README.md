@@ -36,7 +36,7 @@ Functions overview:
 Example usage:
 
 ```python
-from shopify_blog_automation_tool import get_blogs, create_article
+from shopify_blog_manager import get_blogs, create_article
 
 store_url = "https://example.myshopify.com"
 access_token = "your_access_token"
