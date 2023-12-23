@@ -15,6 +15,25 @@ headers = {
 
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def get_blogs(store_url, access_token):
+    """
+    Retrieves all blogs from the specified Shopify store using the Shopify Admin API.
+
+    The function makes an HTTP GET request to the Shopify API's blog endpoint. It is decorated with a retry mechanism which retries the request on encountering specific exceptions (like network-related errors) with exponential backoff.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+
+    Returns:
+    - dict: A dictionary object containing the response data with all blogs if successful.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 200, it raises an exception with the error code and text.
+
+    Usage:
+    - blogs = get_blogs('https://example.myshopify.com', 'your_access_token')
+      print(blogs)  # Prints the list of blogs retrieved from the Shopify store.
+    """
     pass
         
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
