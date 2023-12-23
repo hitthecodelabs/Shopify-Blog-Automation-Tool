@@ -66,6 +66,30 @@ def create_blog_with_metafields(store_url, access_token, title, key, value, type
 
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def create_article(store_url, access_token, blog_id, title, author, tags, body_html):
+    """
+    Creates a new article in a specified blog on the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP POST request to the Shopify API's article creation endpoint for a specific blog. It includes details such as the article's title, author, tags, and body. The function automatically retries on encountering specific exceptions (like network-related errors) with exponential backoff.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - blog_id (str): The ID of the blog where the article will be created.
+    - title (str): Title of the new article.
+    - author (str): Author of the new article.
+    - tags (str): Comma-separated tags for the new article.
+    - body_html (str): HTML content of the new article.
+
+    Returns:
+    - dict: A dictionary object containing the response data with details of the created article if successful.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 201, it raises an exception with the error code and text.
+
+    Usage:
+    - new_article = create_article('https://example.myshopify.com', 'your_access_token', '123456789', 'My First Article', 'John Doe', 'Fashion, Trends', '<p>This is the body of my article.</p>')
+      print(new_article)  # Prints the details of the newly created article.
+    """
     pass
 
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
