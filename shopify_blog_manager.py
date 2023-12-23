@@ -38,6 +38,30 @@ def get_blogs(store_url, access_token):
         
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def create_blog_with_metafields(store_url, access_token, title, key, value, type, namespace):
+    """
+    Creates a new blog with specified metafields in the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP POST request to the Shopify API's blog creation endpoint. It includes metafields in the request, allowing for additional custom data to be associated with the blog. The function automatically retries on encountering specific exceptions (like network-related errors) with exponential backoff.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - title (str): Title of the new blog.
+    - key (str): Key for the metafield.
+    - value (str): Value for the metafield.
+    - type (str): Type of the metafield (e.g., 'string', 'integer').
+    - namespace (str): Namespace for the metafield, used for grouping and identifying metafields.
+
+    Returns:
+    - dict: A dictionary object containing the response data with details of the created blog if successful.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 201, it raises an exception with the error code and text.
+
+    Usage:
+    - new_blog = create_blog_with_metafields('https://example.myshopify.com', 'your_access_token', 'My New Blog', 'sponsor', 'Shopify', 'string', 'global')
+      print(new_blog)  # Prints the details of the newly created blog.
+    """
     pass
 
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
