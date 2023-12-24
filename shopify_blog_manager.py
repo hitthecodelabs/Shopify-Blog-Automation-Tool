@@ -119,7 +119,12 @@ def get_articles(store_url, access_token, blog_id):
     - articles = get_articles('https://example.myshopify.com', 'your_access_token', '123456789')
       print(articles)  # Prints the list of articles retrieved from the specified blog.
     """
-    pass
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    response = requests.get(f"{store_url}/admin/api/2023-10/blogs/{blog_id}/articles.json", headers=headers)
+    if response.status_code == 200:
+        return response.json()  # Returns the list of articles
+    else:
+        raise Exception(f"Error: {response.status_code}, {response.text}")  # Raises an exception if something goes wrong
     
 @retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def get_article_count(store_url, access_token, blog_id):
