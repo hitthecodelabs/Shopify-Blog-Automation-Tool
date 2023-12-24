@@ -148,4 +148,9 @@ def get_article_count(store_url, access_token, blog_id):
     - article_count = get_article_count('https://example.myshopify.com', 'your_access_token', '123456789')
       print(article_count)  # Prints the count of articles in the specified blog.
     """
-    pass
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    response = requests.get(f"{store_url}/admin/api/2023-10/blogs/{blog_id}/articles/count.json", headers=headers)
+    if response.status_code == 200:
+        return response.json()  # Returns the count of articles
+    else:
+        raise Exception(f"Error: {response.status_code}, {response.text}")  # Raises an exception if something goes wrong
