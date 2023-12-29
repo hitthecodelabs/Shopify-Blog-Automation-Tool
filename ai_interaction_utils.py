@@ -68,3 +68,29 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
         # Raise error if the function doesn't support the provided model
         raise NotImplementedError(f"""num_tokens_from_messages() is not presently implemented for model {model}.
     See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens.""")
+
+def calculate_pricing(input_tokens, output_tokens, input_cost_per_1k=0.01, output_cost_per_1k=0.03):
+    """
+    Calculate the pricing for using an AI model based on the number of input and output tokens.
+
+    Parameters:
+    - input_tokens (int): The number of tokens in the input.
+    - output_tokens (int): The number of tokens in the output.
+    - input_cost_per_1k (float): Cost per 1,000 input tokens (default is 0.01 cents).
+    - output_cost_per_1k (float): Cost per 1,000 output tokens (default is 0.03 cents).
+
+    Returns:
+    - float: The total cost of the operation.
+
+    This function calculates the total cost by considering separate costs for input and
+    output tokens, which allows for a detailed understanding of the expense associated
+    with the model's usage.
+    """
+    # Calculate the costs for input and output separately
+    input_cost = (input_tokens / 1000) * input_cost_per_1k
+    output_cost = (output_tokens / 1000) * output_cost_per_1k
+
+    # Sum the input and output costs to get the total cost
+    total_cost = input_cost + output_cost
+
+    return total_cost
