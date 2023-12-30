@@ -113,3 +113,49 @@ def calculate_pricing(input_tokens, output_tokens, input_cost_per_1k=0.01, outpu
     total_cost = input_cost + output_cost
 
     return total_cost
+
+def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
+    """
+    Attempts to generate content using the OpenAI API and validates the resulting JSON structure.
+    It retries the content generation up to a specified number of attempts if the JSON is not valid
+    or the expected keys are missing.
+
+    Parameters:
+    - client: The OpenAI API client instance to use for making requests.
+    - messages: A list of message dicts representing the conversation history for the API request.
+    - model: The identifier of the model to use for the chat completion.
+    - expected_keys: A set of strings representing the keys expected to be in the JSON response.
+    - max_attempts: The maximum number of attempts to make (default is 3).
+
+    Returns:
+    - json_output: The raw JSON output from the API if successful.
+    - info: The parsed JSON data as a Python dictionary if successful.
+
+    The function first attempts to generate content using the provided client, messages, and model.
+    It then checks whether the generated content is valid JSON and contains all the expected keys.
+    If the JSON is invalid or keys are missing, it retries the generation and validation process up
+    to the maximum number of attempts specified. If it fails after all attempts, it raises a ValueError.
+
+    Exceptions:
+    - ValueError: Raised when the maximum number of attempts is reached without successful validation.
+    """
+    for attempt in range(max_attempts):
+        try:
+            # Generate content and attempt to parse it as JSON.
+            json_output = generate_content(client, messages, model=model)
+            info = json.loads(json_output)
+            
+            # Check if all expected keys are present in the parsed JSON.
+            if all(key in info for key in expected_keys):
+                # If all keys are present, return the raw JSON and the parsed info.
+                return json_output, info
+            else:
+                # If keys are missing, print which ones and retry.
+                missing_keys = expected_keys - info.keys()
+                print(f"Missing keys: {missing_keys}. Retrying ({attempt + 1}/{max_attempts})...")
+        except json.JSONDecodeError:
+            # If JSON decoding fails, print an error message and retry.
+            print(f"Failed to decode JSON. Retrying ({attempt + 1}/{max_attempts})...")
+    
+    # If all attempts fail, raise an error indicating the failure.
+    raise ValueError("Maximum attempts reached. Failed to generate valid content.")
