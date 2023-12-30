@@ -1,29 +1,48 @@
 import tiktoken
 from openai import OpenAI
 
-def generate_content(prompt):
+def generate_content(client, messages, model='gpt-3.5-turbo-1106', show_output=False, show_tokens=False):
     """
-    Generates content based on a specific aspect of the product or any given prompt.
+    This function generates content by interacting with an OpenAI model specified by the user. 
+    It sends messages to the model and retrieves the generated response in JSON format.
 
     Parameters:
-    - prompt: A string containing the text you want the AI to respond to.
+    - client: The OpenAI API client instance to use for making requests.
+    - messages: A list of message dicts representing the conversation history where each message contains a 'role' and 'content'.
+    - model: The identifier of the model to use for the chat completion. Default is 'gpt-3.5-turbo-1106'.
+    - show_output: If True, prints the content of the generated messages.
+    - show_tokens: If True, prints the token usage information.
 
     Returns:
-    - A string containing the AI-generated response to the prompt.
+    - json_output: The content of the generated message in JSON format.
 
-    The function communicates with an AI model using the OpenAI API to generate a
-    response based on the provided prompt. It utilizes a specific model and settings
-    to tailor the response's creativity and format.
+    The function first calls the OpenAI API's chat completions endpoint to generate a response from the provided messages. 
+    It then processes the response to extract the usage information (if show_tokens is True) and the actual generated content. 
+    If show_output is True, the function also prints the generated content before returning it.
     """
-    # Send the prompt to the AI and get a completion
+    # Generate the chat completion using the OpenAI API.
     chat_completion = client.chat.completions.create(
-        messages=[{"role": "user", "content": prompt}],  # The prompt from the user
-        temperature=0.9,  # Controls the randomness of the output
-        model="gpt-3.5-turbo-1106",  # Specifies the AI model used
-        response_format={"type": "json_object"},  # Sets the format of the response
-    )
-    # Return the content of the AI's response
-    return chat_completion.choices[0].message['content']
+            messages=messages,
+            # max_tokens=600,  # Uncomment and adjust as necessary.
+            temperature=0.9,  # Adjust the randomness of the output (0.0-1.0).
+            model=model,  # Model to use for completion.
+            response_format={"type": "json_object"},  # The format of the response.
+        )
+    
+    # Dump the model's response to access detailed information.
+    D = chat_completion.model_dump()
+    
+    # If requested, print the token usage information.
+    if show_tokens:
+        print(D['usage'])
+    
+    # Extract and print the generated message content.
+    json_output = D['choices'][0]['message']['content']
+    if show_output:
+        print(json_output)
+    
+    # Return the generated content.
+    return json_output
 
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
     """
