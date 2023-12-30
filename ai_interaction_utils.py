@@ -159,3 +159,67 @@ def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
     
     # If all attempts fail, raise an error indicating the failure.
     raise ValueError("Maximum attempts reached. Failed to generate valid content.")
+
+def validate_and_retry_dynamic(client, messages, model, min_features, max_attempts=3):
+    """
+    Attempts to generate content dynamically using the OpenAI API and validates the resulting JSON
+    structure, focusing on ensuring a minimum number of features/benefits. It retries the content
+    generation up to a specified number of attempts if the JSON is not valid or if the feature/benefit
+    count is below the minimum required.
+
+    Parameters:
+    - client: The OpenAI API client instance to use for making requests.
+    - messages: A list of message dicts representing the conversation history for the API request.
+    - model: The identifier of the model to use for the chat completion.
+    - min_features: The minimum number of feature/benefit pairs expected in the response.
+    - max_attempts: The maximum number of attempts to make (default is 3).
+
+    Returns:
+    - json_output: The raw JSON output from the API if successful.
+    - info: The parsed JSON data as a Python dictionary if successful.
+
+    The function first attempts to generate content using the provided client, messages, and model.
+    It then checks whether the generated content is valid JSON and contains a minimum number of
+    features/benefits, each paired with corresponding content. If the JSON is invalid, or the feature/benefit
+    count is insufficient, it retries the generation and validation process up to the maximum number of
+    attempts specified. If it fails after all attempts, it raises a ValueError.
+
+    Exceptions:
+    - ValueError: Raised when the maximum number of attempts is reached without successful validation.
+    """
+    for attempt in range(max_attempts):
+        try:
+            # Generate content and attempt to parse it as JSON.
+            json_output = generate_content(client, messages, model=model)
+            info = json.loads(json_output)
+            
+            # Validate the presence of 'subheader_2' in the JSON.
+            if "subheader_2" not in info:
+                print("Missing 'subheader_2'. Retrying...")
+                continue
+
+            # Identify and count the feature and content keys.
+            feature_keys = [key for key in info if key.startswith("feature/benefit") and not key.endswith("content")]
+            feature_content_keys = [key for key in info if key.startswith("feature/benefit") and key.endswith("content")]
+            
+            # Check for a mismatch between feature titles and their content.
+            if len(feature_keys) != len(feature_content_keys):
+                print(f"Mismatch in feature and content count. Features: {len(feature_keys)}, Contents: {len(feature_content_keys)}. Retrying...")
+                continue
+
+            # Validate the number of features/benefits against the minimum required.
+            feature_count = len(feature_keys)
+            if not (min_features <= feature_count):
+                print(f"Incorrect number of features/benefits: {feature_count}. Retrying...")
+                continue
+            
+            # If validation passes, return the raw JSON and the parsed information.
+            return json_output, info
+            
+        except json.JSONDecodeError:
+            # If JSON decoding fails, print an error message and retry.
+            print(f"Failed to decode JSON. Retrying ({attempt + 1}/{max_attempts})...")
+    
+    # If all attempts fail, raise an error indicating the failure.
+    raise ValueError("Maximum attempts reached. Failed to generate valid content.")
+
