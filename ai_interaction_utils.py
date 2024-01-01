@@ -141,6 +141,7 @@ def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
     Exceptions:
     - ValueError: Raised when the maximum number of attempts is reached without successful validation.
     """
+def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
     for attempt in range(max_attempts):
         try:
             # Generate content and attempt to parse it as JSON
@@ -153,13 +154,17 @@ def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
                 print(f"Missing keys: {missing_keys}. Retrying ({attempt + 1}/{max_attempts})...")
                 continue
 
-            # Validate the 'introduction' for the highlighted product
-            introduction = info.get("introduction", "")
-            if not re.search(r"\*\*[^*]+\*\*", introduction):
-                print(f"The product is not properly highlighted in 'introduction'. Retrying ({attempt + 1}/{max_attempts})...")
-                continue
-
-            return json_output, info  # All validations passed
+            # Validate the highlighted product in the introduction
+            intro = info.get('introduction', '')
+            if intro.count('*') == 2 and intro.find('*') < intro.rfind('*'):
+                # Ensure the highlighted text is reasonable (e.g., not the entire introduction)
+                start, end = intro.find('*'), intro.rfind('*')
+                if 0 < end - start - 1 <= len(intro) / 2:
+                    return json_output, info
+                else:
+                    print("Highlighted product format is incorrect or too long. Retrying...")
+            else:
+                print("Missing or incorrect product highlight in introduction. Retrying...")
 
         except json.JSONDecodeError:
             print(f"Failed to decode JSON. Retrying ({attempt + 1}/{max_attempts})...")
