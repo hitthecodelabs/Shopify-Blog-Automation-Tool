@@ -142,23 +142,27 @@ def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
     """
     for attempt in range(max_attempts):
         try:
-            # Generate content and attempt to parse it as JSON.
+            # Generate content and attempt to parse it as JSON
             json_output = generate_content(client, messages, model=model)
             info = json.loads(json_output)
-            
-            # Check if all expected keys are present in the parsed JSON.
-            if all(key in info for key in expected_keys):
-                # If all keys are present, return the raw JSON and the parsed info.
-                return json_output, info
-            else:
-                # If keys are missing, print which ones and retry.
+
+            # Check if all expected keys are present
+            if not all(key in info for key in expected_keys):
                 missing_keys = expected_keys - info.keys()
                 print(f"Missing keys: {missing_keys}. Retrying ({attempt + 1}/{max_attempts})...")
+                continue
+
+            # Validate the 'introduction' for the highlighted product
+            introduction = info.get("introduction", "")
+            if not re.search(r"\*\*[^*]+\*\*", introduction):
+                print(f"The product is not properly highlighted in 'introduction'. Retrying ({attempt + 1}/{max_attempts})...")
+                continue
+
+            return json_output, info  # All validations passed
+
         except json.JSONDecodeError:
-            # If JSON decoding fails, print an error message and retry.
             print(f"Failed to decode JSON. Retrying ({attempt + 1}/{max_attempts})...")
-    
-    # If all attempts fail, raise an error indicating the failure.
+
     raise ValueError("Maximum attempts reached. Failed to generate valid content.")
 
 def validate_and_retry_dynamic(client, messages, model, min_features, max_attempts=3):
