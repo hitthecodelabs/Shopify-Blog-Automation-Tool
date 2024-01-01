@@ -1,3 +1,4 @@
+import re
 import json
 import tiktoken
 from openai import OpenAI
