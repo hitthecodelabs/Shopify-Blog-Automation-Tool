@@ -298,3 +298,34 @@ def validate_and_retry_guide(client, messages, model, min_steps, max_attempts=3)
     
     # If all attempts fail, raise an error indicating the failure.
     raise ValueError("Maximum attempts reached. Failed to generate valid content.")
+
+def make_product_link(text, url, product):
+    """
+    Replaces a product name enclosed in asterisks within a given text with a clickable HTML link.
+
+    Parameters:
+    - text (str): The text where the product name is to be replaced. It should contain the product name enclosed in asterisks, like *productName*.
+    - url (str): The URL to which the link should redirect. This is the href value for the generated anchor tag.
+    - product (str): The exact product name expected to be enclosed in asterisks within the text. This helps ensure only the specific product name is replaced.
+
+    Returns:
+    - str: The modified text with the product name replaced by a clickable link. If the product name enclosed in asterisks isn't found, the original text is returned unchanged.
+
+    Description:
+    The function searches for the product name enclosed in asterisks (e.g., *productName*) in the provided text. If found, it replaces this with an HTML anchor (<a>) tag that links to the provided URL, effectively making the product name clickable in the HTML view. This is particularly useful for enhancing user engagement and directing users to a product page from a text snippet, blog post, or article.
+
+    Example:
+    text = "Check out our latest product, *SuperWidget*!"
+    url = "http://example.com/superwidget"
+    make_product_link(text, url, "SuperWidget")
+    # Output: 'Check out our latest product, <a href="http://example.com/superwidget" class="product-link">SuperWidget</a>!'
+    """
+
+    # Find the product name enclosed in asterisks
+    product_match = re.search(r'\*([^*]+)\*', text)
+    if product_match:
+        # Extract the product name
+        product_name = product_match.group(1)
+        # Replace the name with an anchor tag
+        return text.replace(f"*{product}*", f'<a href="{url}" class="product-link">{product_name}</a>')
+    return text  # Return the original text if no product name is found
