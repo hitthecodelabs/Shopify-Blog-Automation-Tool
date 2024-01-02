@@ -117,31 +117,6 @@ def calculate_pricing(input_tokens, output_tokens, input_cost_per_1k=0.01, outpu
     return total_cost
 
 def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
-    """
-    Attempts to generate content using the OpenAI API and validates the resulting JSON structure.
-    It retries the content generation up to a specified number of attempts if the JSON is not valid
-    or the expected keys are missing.
-
-    Parameters:
-    - client: The OpenAI API client instance to use for making requests.
-    - messages: A list of message dicts representing the conversation history for the API request.
-    - model: The identifier of the model to use for the chat completion.
-    - expected_keys: A set of strings representing the keys expected to be in the JSON response.
-    - max_attempts: The maximum number of attempts to make (default is 3).
-
-    Returns:
-    - json_output: The raw JSON output from the API if successful.
-    - info: The parsed JSON data as a Python dictionary if successful.
-
-    The function first attempts to generate content using the provided client, messages, and model.
-    It then checks whether the generated content is valid JSON and contains all the expected keys.
-    If the JSON is invalid or keys are missing, it retries the generation and validation process up
-    to the maximum number of attempts specified. If it fails after all attempts, it raises a ValueError.
-
-    Exceptions:
-    - ValueError: Raised when the maximum number of attempts is reached without successful validation.
-    """
-def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
     for attempt in range(max_attempts):
         try:
             # Generate content and attempt to parse it as JSON
