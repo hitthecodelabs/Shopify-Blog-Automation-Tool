@@ -2,6 +2,7 @@ import re
 import json
 import tiktoken
 from openai import OpenAI
+from urllib.parse import urlparse
 
 def generate_content(client, messages, model='gpt-3.5-turbo-1106', show_output=False, show_tokens=False):
     """
