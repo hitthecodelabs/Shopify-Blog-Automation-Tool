@@ -412,3 +412,48 @@ def create_article(admin_store_url, blog_id, access_token, new_title, tags, html
         print("Article created successfully!")
     else:
         print("Error creating article:", response.status_code, response.text)
+
+def create_article(admin_store_url, blog_id, access_token, new_title, tags, html_content, author):
+    """
+    Creates an article in a specified blog on Shopify.
+
+    Parameters:
+    - admin_store_url: The base URL of the admin store.
+    - blog_id: The ID of the blog where the article will be created.
+    - access_token: The access token for Shopify API authentication.
+    - new_title: The title of the new article.
+    - tags: A string of comma-separated tags for the article.
+    - html_content: The HTML content of the article.
+    - author: The name of the author for the new article.
+
+    The function makes a POST request to the Shopify API to create an article with the given details.
+    It prints a success message if the article is created successfully or an error message otherwise.
+    """
+
+    # Construct the URL for the API endpoint
+    url = f"{admin_store_url}/admin/api/2023-10/blogs/{blog_id}/articles.json"
+
+    # Set the headers for the request
+    headers = {
+        "X-Shopify-Access-Token": access_token,
+        "Content-Type": "application/json"
+    }
+
+    # Prepare the data to be sent in the request
+    data = json.dumps({
+        "article": {
+            "title": new_title,
+            "author": author,  # Set the author name
+            "tags": tags,
+            "body_html": html_content
+        }
+    })
+
+    # Make the POST request to create the article
+    response = requests.post(url, headers=headers, data=data)
+
+    # Check the response status and print the appropriate message
+    if response.status_code == 201:
+        print("Article created successfully!")
+    else:
+        print("Error creating article:", response.status_code, response.text)
