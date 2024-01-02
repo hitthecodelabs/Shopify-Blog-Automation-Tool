@@ -117,6 +117,28 @@ def calculate_pricing(input_tokens, output_tokens, input_cost_per_1k=0.01, outpu
     return total_cost
 
 def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
+    """
+    Attempts to generate and validate content based on the expected structure and elements.
+
+    Parameters:
+    - client: The client object used to interact with a content generation service.
+    - messages: The messages or prompts used to generate content.
+    - model: The model specified for generating content.
+    - expected_keys: A set of keys expected to be present in the generated content.
+    - max_attempts: The maximum number of attempts to generate valid content (default is 3).
+
+    The function attempts to generate content up to a specified number of times. It validates the generated content
+    by checking for the presence of expected keys and a correctly formatted product highlight in the introduction.
+    If the validation fails, it retries until the maximum number of attempts is reached.
+
+    Returns:
+    - json_output: The raw JSON output from the last successful generation attempt.
+    - info: The parsed JSON content as a dictionary.
+
+    Raises:
+    - ValueError: If the maximum number of attempts is reached and valid content is not generated.
+    """
+
     for attempt in range(max_attempts):
         try:
             # Generate content and attempt to parse it as JSON
@@ -144,6 +166,7 @@ def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
         except json.JSONDecodeError:
             print(f"Failed to decode JSON. Retrying ({attempt + 1}/{max_attempts})...")
 
+    # Raise an error if all attempts fail
     raise ValueError("Maximum attempts reached. Failed to generate valid content.")
 
 def validate_and_retry_dynamic(client, messages, model, min_features, max_attempts=3):
