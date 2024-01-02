@@ -169,67 +169,65 @@ def validate_and_retry(client, messages, model, expected_keys, max_attempts=3):
     # Raise an error if all attempts fail
     raise ValueError("Maximum attempts reached. Failed to generate valid content.")
 
-def validate_and_retry_dynamic(client, messages, model, min_features, max_attempts=3):
+def validate_and_retry_dynamic(client, messages, model, min_features, max_attempts=3, show=False):
     """
-    Attempts to generate content dynamically using the OpenAI API and validates the resulting JSON
-    structure, focusing on ensuring a minimum number of features/benefits. It retries the content
-    generation up to a specified number of attempts if the JSON is not valid or if the feature/benefit
-    count is below the minimum required.
+    Attempts to dynamically generate and validate content based on the expected structure, elements, and a minimum number of features.
 
     Parameters:
-    - client: The OpenAI API client instance to use for making requests.
-    - messages: A list of message dicts representing the conversation history for the API request.
-    - model: The identifier of the model to use for the chat completion.
-    - min_features: The minimum number of feature/benefit pairs expected in the response.
-    - max_attempts: The maximum number of attempts to make (default is 3).
+    - client: The client object used to interact with a content generation service.
+    - messages: The messages or prompts used to generate content.
+    - model: The model specified for generating content.
+    - min_features: The minimum number of features/benefits required in the generated content.
+    - max_attempts: The maximum number of attempts to generate valid content (default is 3).
+    - show: A boolean indicating whether to print the generated content for debugging (default is False).
+
+    The function tries to generate content up to a specified number of times, validating the generated content
+    by checking for the presence of a specific subheader ('subheader_2') and ensuring there is a minimum number of features/benefits
+    that match with their corresponding content. If the validation fails, it retries until the maximum number of attempts is reached.
 
     Returns:
-    - json_output: The raw JSON output from the API if successful.
-    - info: The parsed JSON data as a Python dictionary if successful.
+    - json_output: The raw JSON output from the last successful generation attempt.
+    - info: The parsed JSON content as a dictionary.
 
-    The function first attempts to generate content using the provided client, messages, and model.
-    It then checks whether the generated content is valid JSON and contains a minimum number of
-    features/benefits, each paired with corresponding content. If the JSON is invalid, or the feature/benefit
-    count is insufficient, it retries the generation and validation process up to the maximum number of
-    attempts specified. If it fails after all attempts, it raises a ValueError.
-
-    Exceptions:
-    - ValueError: Raised when the maximum number of attempts is reached without successful validation.
+    Raises:
+    - ValueError: If the maximum number of attempts is reached and valid content is not generated.
     """
+
     for attempt in range(max_attempts):
         try:
-            # Generate content and attempt to parse it as JSON.
+            # Generate content and attempt to parse it as JSON
             json_output = generate_content(client, messages, model=model)
             info = json.loads(json_output)
-            
-            # Validate the presence of 'subheader_2' in the JSON.
+            if show:
+                print(info)  # Print the generated content if 'show' is True
+
+            # Validate the presence of 'subheader_2'
             if "subheader_2" not in info:
                 print("Missing 'subheader_2'. Retrying...")
                 continue
 
-            # Identify and count the feature and content keys.
-            feature_keys = [key for key in info if key.startswith("feature/benefit") and not key.endswith("content")]
-            feature_content_keys = [key for key in info if key.startswith("feature/benefit") and key.endswith("content")]
-            
-            # Check for a mismatch between feature titles and their content.
-            if len(feature_keys) != len(feature_content_keys):
-                print(f"Mismatch in feature and content count. Features: {len(feature_keys)}, Contents: {len(feature_content_keys)}. Retrying...")
+            # Initialize counters for feature/benefit and content
+            feature_count = 0
+            content_count = 0
+
+            # Iterate over keys to count features/benefits and content
+            for key in info:
+                if "tittel_" in key and not key.startswith("innhold_"):
+                    feature_count += 1
+                elif key.startswith("innhold_"):
+                    content_count += 1
+
+            # Check if the number of features/benefits and content match and meet the minimum requirement
+            if feature_count != content_count or feature_count < min_features or content_count < min_features:
+                print(f"Mismatch or insufficient features and content. Features: {feature_count}, Contents: {content_count}. Retrying...")
                 continue
 
-            # Validate the number of features/benefits against the minimum required.
-            feature_count = len(feature_keys)
-            if not (min_features <= feature_count):
-                print(f"Incorrect number of features/benefits: {feature_count}. Retrying...")
-                continue
-            
-            # If validation passes, return the raw JSON and the parsed information.
-            return json_output, info
-            
+            return json_output, info  # Return both raw JSON and parsed information
+
         except json.JSONDecodeError:
-            # If JSON decoding fails, print an error message and retry.
             print(f"Failed to decode JSON. Retrying ({attempt + 1}/{max_attempts})...")
-    
-    # If all attempts fail, raise an error indicating the failure.
+
+    # Raise an error if all attempts fail
     raise ValueError("Maximum attempts reached. Failed to generate valid content.")
 
 def validate_and_retry_guide(client, messages, model, min_steps, max_attempts=3):
