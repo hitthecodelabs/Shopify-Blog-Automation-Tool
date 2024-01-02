@@ -154,3 +154,34 @@ def get_article_count(store_url, access_token, blog_id):
         return response.json()  # Returns the count of articles
     else:
         raise Exception(f"Error: {response.status_code}, {response.text}")  # Raises an exception if something goes wrong
+
+@retry(wait=wait_random_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(10), retry=retry_if_exception_type(requests.exceptions.RequestException))
+def delete_article(store_url, access_token, blog_id, article_id):
+    """
+    Deletes an article from a specified blog on the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP DELETE request to the Shopify API's article endpoint for a specific article in a blog. It is decorated with a retry mechanism which retries the request on encountering specific exceptions (like network-related errors) with exponential backoff.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - blog_id (str): The ID of the blog from which the article will be deleted.
+    - article_id (str): The ID of the article to delete.
+
+    Returns:
+    - None: If the delete operation is successful.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 200, it raises an exception with the error code and text.
+
+    Usage:
+    - delete_article('https://example.myshopify.com', 'your_access_token', '123456789', '987654321')
+      # Deletes the specified article from the specified blog.
+    """
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    response = requests.delete(f"{store_url}/admin/api/2023-10/blogs/{blog_id}/articles/{article_id}.json", headers=headers)
+    if response.status_code == 200:
+        print("Article deleted successfully!")  # Inform the user of success
+    else:
+        raise Exception(f"Error: {response.status_code}, {response.text}")  # Raises an exception if something goes wrong
+
