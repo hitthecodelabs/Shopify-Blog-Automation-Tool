@@ -443,7 +443,7 @@ def create_article(admin_store_url, blog_id, access_token, new_title, tags, html
     data = json.dumps({
         "article": {
             "title": new_title,
-            "author": author,  # Set the author name
+            "author": author,
             "tags": tags,
             "body_html": html_content
         }
