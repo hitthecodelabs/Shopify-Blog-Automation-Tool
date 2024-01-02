@@ -332,7 +332,7 @@ def make_product_link(text, url, product):
 
 def validate_store_url(url):
     """
-    Validates the store URL provided by the user.
+    Validates the store URL provided by the user with intense checks.
 
     Parameters:
     - url: The store URL to be validated.
@@ -340,6 +340,9 @@ def validate_store_url(url):
     Returns:
     - The validated URL if it's correct or raises a ValueError with an appropriate message.
     """
+
+    # Normalize and strip leading/trailing whitespaces from the URL
+    url = url.strip()
 
     # Check if the URL is well-formed
     parsed_url = urlparse(url)
@@ -350,10 +353,17 @@ def validate_store_url(url):
     if parsed_url.scheme not in ['http', 'https']:
         raise ValueError("The provided URL must start with 'http://' or 'https://'.")
 
-    # Check if the URL ends with "/"
+    # Remove multiple slashes and backslashes except for protocol part
+    url = parsed_url.scheme + '://' + re.sub(r'[/\\]+', '/', parsed_url.netloc + parsed_url.path)
+
+    # Check for common typos and mistakes in domain names
+    if '..' in url or '//' in url[8:]:  # excluding the '//' in 'http://'
+        raise ValueError("The provided URL contains invalid characters or sequence of characters.")
+
+    # Ensure URL ends with a single "/"
     if not url.endswith('/'):
         url += '/'
 
-    # Add more checks here if necessary (e.g., domain name validation)
+    # Add more checks here if necessary (e.g., domain name validation, checking against a list of valid domains, etc.)
 
     return url
