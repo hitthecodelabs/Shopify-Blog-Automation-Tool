@@ -330,3 +330,30 @@ def make_product_link(text, url, product):
         return text.replace(f"*{product}*", f'<a href="{url}" style="color: {link_color}; font-weight: bold; text-decoration: underline;">{product_name}</a>')
     return text  # Return the original text if no product name is found
 
+def validate_store_url(url):
+    """
+    Validates the store URL provided by the user.
+
+    Parameters:
+    - url: The store URL to be validated.
+
+    Returns:
+    - The validated URL if it's correct or raises a ValueError with an appropriate message.
+    """
+
+    # Check if the URL is well-formed
+    parsed_url = urlparse(url)
+    if not all([parsed_url.scheme, parsed_url.netloc]):
+        raise ValueError("The provided URL is malformed. Please provide a valid URL.")
+
+    # Check if the URL uses a valid scheme (http or https)
+    if parsed_url.scheme not in ['http', 'https']:
+        raise ValueError("The provided URL must start with 'http://' or 'https://'.")
+
+    # Check if the URL ends with "/"
+    if not url.endswith('/'):
+        url += '/'
+
+    # Add more checks here if necessary (e.g., domain name validation)
+
+    return url
