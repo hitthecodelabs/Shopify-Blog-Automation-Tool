@@ -301,7 +301,7 @@ def validate_and_retry_guide(client, messages, model, min_steps, max_attempts=3)
 
 def make_product_link(text, url, product):
     """
-    Replaces a product name enclosed in asterisks within a given text with a clickable HTML link.
+    Replaces a product name enclosed in asterisks within a given text with a clickable HTML link that has specific inline styles.
 
     Parameters:
     - text (str): The text where the product name is to be replaced. It should contain the product name enclosed in asterisks, like *productName*.
@@ -309,16 +309,20 @@ def make_product_link(text, url, product):
     - product (str): The exact product name expected to be enclosed in asterisks within the text. This helps ensure only the specific product name is replaced.
 
     Returns:
-    - str: The modified text with the product name replaced by a clickable link. If the product name enclosed in asterisks isn't found, the original text is returned unchanged.
+    - str: The modified text with the product name replaced by a clickable link with inline styles. If the product name enclosed in asterisks isn't found, the original text is returned unchanged.
 
     Description:
-    The function searches for the product name enclosed in asterisks (e.g., *productName*) in the provided text. If found, it replaces this with an HTML anchor (<a>) tag that links to the provided URL, effectively making the product name clickable in the HTML view. This is particularly useful for enhancing user engagement and directing users to a product page from a text snippet, blog post, or article.
+    The function searches for the product name enclosed in asterisks (e.g., *productName*) in the provided text. If found, it replaces this with an HTML anchor (<a>) tag that links to the provided URL and applies inline styles to make the product name stand out as a clickable link in the HTML view. The inline styles include a specified color, bold font weight, and underline text decoration. This method is particularly useful for ensuring the link is styled consistently and prominently, regardless of external CSS.
 
     Example:
-    text = "Check out our latest product, *SuperWidget*!"
+    text = "Discover our innovative *SuperWidget* today!"
     url = "http://example.com/superwidget"
-    make_product_link(text, url, "SuperWidget")
-    # Output: 'Check out our latest product, <a href="http://example.com/superwidget" class="product-link">SuperWidget</a>!'
+    product = "SuperWidget"
+    make_product_link(text, url, product)
+    # Output: 'Discover our innovative <a href="http://example.com/superwidget" style="color: #007bff; font-weight: bold; text-decoration: underline;">SuperWidget</a> today!'
+
+    Note:
+    The color for the link is defined within the function as a bright blue (#007bff), but you can customize this color by changing the 'link_color' variable.
     """
 
     # Find the product name enclosed in asterisks
@@ -326,6 +330,9 @@ def make_product_link(text, url, product):
     if product_match:
         # Extract the product name
         product_name = product_match.group(1)
-        # Replace the name with an anchor tag
-        return text.replace(f"*{product}*", f'<a href="{url}" class="product-link">{product_name}</a>')
+        # Define the color you want for the product link
+        link_color = '#007bff'  # Bright blue, but you can choose any color
+        # Replace the name with an anchor tag and inline style for color
+        return text.replace(f"*{product}*", f'<a href="{url}" style="color: {link_color}; font-weight: bold; text-decoration: underline;">{product_name}</a>')
     return text  # Return the original text if no product name is found
+
