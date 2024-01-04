@@ -458,3 +458,34 @@ def delete_article(store_url, access_token, blog_id, article_id):
         # Raises an exception if something goes wrong
         raise Exception(f"Error: {response.status_code}, {response.text}")
 
+def get_articles(store_url, access_token, blog_id):
+    """
+    Retrieves the list of articles from a specified blog on the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP GET request to the Shopify API's article endpoint for a specific blog. It fetches the list of all articles within that blog.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - blog_id (str): The ID of the blog for which to retrieve the list of articles.
+
+    The function sends a GET request to the Shopify API to retrieve all articles for the specified blog ID. If the request
+    is successful, it returns the list of articles. If there's an error, it raises an exception with details.
+
+    Returns:
+    - dict: A dictionary object containing the response data with the list of articles if successful.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 200, it raises an exception with the error code and text.
+    """
+    
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    response = requests.get(f"{store_url}/admin/api/2023-10/blogs/{blog_id}/articles.json", headers=headers)
+    
+    # Check the response status and return the list of articles or raise an exception
+    if response.status_code == 200:
+        return response.json()  # Returns the list of articles
+    else:
+        # Raises an exception if something goes wrong
+        raise Exception(f"Error: {response.status_code}, {response.text}")
+
