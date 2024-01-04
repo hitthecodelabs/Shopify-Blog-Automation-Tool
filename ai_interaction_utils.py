@@ -369,22 +369,33 @@ def validate_store_url(url):
 
     return url
 
-def create_article(admin_store_url, blog_id, access_token, new_title, tags, html_content, author):
+def create_article(admin_store_url, blog_id, access_token, new_title, img_url, img_alt, tags, html_content, author):
     """
-    Creates an article in a specified blog on Shopify.
+    Creates an article with an image in a specified blog on the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP POST request to the Shopify API's article endpoint for a specific blog. It creates a new article with the given details including title, author, tags, image, and HTML content.
 
     Parameters:
-    - admin_store_url: The base URL of the admin store.
-    - blog_id: The ID of the blog where the article will be created.
-    - access_token: The access token for Shopify API authentication.
-    - new_title: The title of the new article.
-    - tags: A string of comma-separated tags for the article.
-    - html_content: The HTML content of the article.
+    - admin_store_url (str): The base URL of the admin store, e.g., 'https://example.myshopify.com'.
+    - blog_id (str): The ID of the blog where the article will be created.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - new_title (str): The title of the new article.
+    - img_url (str): The source URL for the image associated with the article.
+    - img_alt (str): The alternative text for the image.
+    - tags (str): A string of comma-separated tags for the article.
+    - html_content (str): The HTML content of the article.
+    - author (str): The name of the author for the new article.
 
-    The function makes a POST request to the Shopify API to create an article with the given details.
-    It prints a success message if the article is created successfully or an error message otherwise.
+    The function sends a POST request to the Shopify API to create an article with the given details. If the article
+    is created successfully, it prints a success message. If there's an error, it prints an error message with details.
+
+    Returns:
+    - None: This function doesn't return anything. It prints messages to indicate the success or failure of the operation.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 201, it raises an exception with the error code and text.
     """
-
+    
     # Construct the URL for the API endpoint
     url = f"{admin_store_url}/admin/api/2023-10/blogs/{blog_id}/articles.json"
 
@@ -398,8 +409,9 @@ def create_article(admin_store_url, blog_id, access_token, new_title, tags, html
     data = json.dumps({
         "article": {
             "title": new_title,
-            "author": author,
+            "author": author,  # Set the author name
             "tags": tags,
+            'image': {"src": img_url, "alt": img_alt},  # Include the image details
             "body_html": html_content
         }
     })
@@ -411,49 +423,7 @@ def create_article(admin_store_url, blog_id, access_token, new_title, tags, html
     if response.status_code == 201:
         print("Article created successfully!")
     else:
-        print("Error creating article:", response.status_code, response.text)
+        # Raises an exception if something goes wrong
+        raise Exception(f"Error creating article: {response.status_code}, {response.text}")
 
-def create_article(admin_store_url, blog_id, access_token, new_title, tags, html_content, author):
-    """
-    Creates an article in a specified blog on Shopify.
 
-    Parameters:
-    - admin_store_url: The base URL of the admin store.
-    - blog_id: The ID of the blog where the article will be created.
-    - access_token: The access token for Shopify API authentication.
-    - new_title: The title of the new article.
-    - tags: A string of comma-separated tags for the article.
-    - html_content: The HTML content of the article.
-    - author: The name of the author for the new article.
-
-    The function makes a POST request to the Shopify API to create an article with the given details.
-    It prints a success message if the article is created successfully or an error message otherwise.
-    """
-
-    # Construct the URL for the API endpoint
-    url = f"{admin_store_url}/admin/api/2023-10/blogs/{blog_id}/articles.json"
-
-    # Set the headers for the request
-    headers = {
-        "X-Shopify-Access-Token": access_token,
-        "Content-Type": "application/json"
-    }
-
-    # Prepare the data to be sent in the request
-    data = json.dumps({
-        "article": {
-            "title": new_title,
-            "author": author,
-            "tags": tags,
-            "body_html": html_content
-        }
-    })
-
-    # Make the POST request to create the article
-    response = requests.post(url, headers=headers, data=data)
-
-    # Check the response status and print the appropriate message
-    if response.status_code == 201:
-        print("Article created successfully!")
-    else:
-        print("Error creating article:", response.status_code, response.text)
