@@ -426,4 +426,35 @@ def create_article(admin_store_url, blog_id, access_token, new_title, img_url, i
         # Raises an exception if something goes wrong
         raise Exception(f"Error creating article: {response.status_code}, {response.text}")
 
+def delete_article(store_url, access_token, blog_id, article_id):
+    """
+    Deletes an article from a specified blog on the Shopify store using the Shopify Admin API.
+
+    This function makes an HTTP DELETE request to the Shopify API's article endpoint for a specific article in a blog. It removes the specified article if it exists.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store, e.g., 'https://example.myshopify.com'.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - blog_id (str): The ID of the blog from which the article will be deleted.
+    - article_id (str): The ID of the article to delete.
+
+    The function sends a DELETE request to the Shopify API to remove an article with the specified ID. If the article
+    is deleted successfully, it prints a success message. If there's an error, it raises an exception with details.
+
+    Returns:
+    - None: This function doesn't return anything. It prints a message to indicate the success of the operation or raises an exception in case of failure.
+
+    Raises:
+    - Exception: If the request fails or the response status is not 200, it raises an exception with the error code and text.
+    """
+    
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    response = requests.delete(f"{store_url}/admin/api/2023-10/blogs/{blog_id}/articles/{article_id}.json", headers=headers)
+    
+    # Check the response status and print the appropriate message
+    if response.status_code == 200:
+        print("Article deleted successfully!")  # Inform the user of success
+    else:
+        # Raises an exception if something goes wrong
+        raise Exception(f"Error: {response.status_code}, {response.text}")
 
