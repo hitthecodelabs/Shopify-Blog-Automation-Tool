@@ -489,3 +489,42 @@ def get_articles(store_url, access_token, blog_id):
         # Raises an exception if something goes wrong
         raise Exception(f"Error: {response.status_code}, {response.text}")
 
+def create_or_replace_article_(admin_store_url, blog_id, access_token, new_title, img_url, img_alt, tags, html_content, author, article_handle):
+    """
+    Creates a new article or replaces an existing one with the same handle in a specified blog on the Shopify store.
+
+    This function first checks if an article with the provided handle already exists in the specified blog. If it does,
+    the existing article is deleted. Then, a new article with the provided details is created.
+
+    Parameters:
+    - admin_store_url (str): The base URL of the admin store, e.g., 'https://example.myshopify.com'.
+    - blog_id (str): The ID of the blog where the article will be created or replaced.
+    - access_token (str): The access token used for authenticating with the Shopify API.
+    - new_title (str): The title of the new article.
+    - img_url (str): The source URL for the image associated with the article.
+    - img_alt (str): The alternative text for the image.
+    - tags (str): A string of comma-separated tags for the article.
+    - html_content (str): The HTML content of the article.
+    - author (str): The name of the author for the new article.
+    - article_handle (str): The handle of the article to check and replace.
+
+    The function first retrieves all articles from the specified blog. If an article with the given handle exists,
+    it is deleted. Finally, a new article is created with the provided details.
+
+    Returns:
+    - None: This function doesn't return anything. It performs operations to delete and/or create articles.
+    """
+    
+    # Retrieve the list of articles from the blog
+    articles = get_articles(admin_store_url, access_token, blog_id)
+    
+    # Check if any article matches the handle provided
+    for article in articles.get('articles', []):
+        if article['handle'] == article_handle:
+            print(f"Article with handle '{article_handle}' exists. Deleting...")
+            delete_article(admin_store_url, access_token, blog_id, article['id'])  # Delete the existing article
+            break  # Exit the loop as we've found and deleted the article
+    
+    # Create the new article
+    create_article_(admin_store_url, blog_id, access_token, new_title, img_url, img_alt, tags, html_content, author)
+
