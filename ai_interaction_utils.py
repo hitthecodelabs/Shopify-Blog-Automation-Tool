@@ -669,3 +669,52 @@ def get_all_articles_combined(store_url, access_token, blog_id, initial_max_date
 
     return all_articles
 
+def update_shopify_article(store_url, access_token, blog_id, article_id, title, author, tags, body_html, published_at):
+    """
+    Updates an article in a Shopify store.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store.
+    - access_token (str): The access token for authentication with the Shopify API.
+    - blog_id (str): The ID of the blog containing the article.
+    - article_id (str): The ID of the article to update.
+    - title (str): The new title of the article.
+    - author (str): The author of the article.
+    - tags (str): Comma-separated tags for the article.
+    - body_html (str): The HTML content of the article.
+    - published_at (str): The publication date and time in UTC (e.g., "Thu Mar 24 15:45:47 UTC 2011").
+
+    Returns:
+    - response (dict): The JSON response from the API which includes the updated article details.
+
+    Raises:
+    - Exception: If the request to Shopify API fails.
+    """
+
+    url = f"{store_url}/admin/api/2023-10/blogs/{blog_id}/articles/{article_id}.json"
+    headers = {
+        "X-Shopify-Access-Token": access_token,
+        "Content-Type": "application/json"
+    }
+    data = {
+        "article": {
+            "id": article_id,
+            "title": title,
+            "author": author,
+            "tags": tags,
+            "body_html": body_html,
+            "published_at": published_at
+        }
+    }
+
+    # Send the PUT request
+    response = requests.put(url, headers=headers, data=json.dumps(data))
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Return the JSON response if the request was successful
+        return response.json()
+    else:
+        # Raise an exception if something went wrong
+        raise Exception(f"Error: {response.status_code}, {response.text}")
+
