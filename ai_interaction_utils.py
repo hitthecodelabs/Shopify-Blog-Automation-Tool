@@ -528,3 +528,67 @@ def create_or_replace_article_(admin_store_url, blog_id, access_token, new_title
     # Create the new article
     create_article_(admin_store_url, blog_id, access_token, new_title, img_url, img_alt, tags, html_content, author)
 
+def get_all_articles_improved(store_url, access_token, blog_id, initial_max_date, direction='backward'):
+    """
+    Retrieves all articles from a Shopify blog in a specified direction relative to an initial date.
+
+    This function fetches articles in batches, avoiding duplicates and ensuring only unique articles are considered.
+    It continues fetching articles until no more are found in the specified direction.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store.
+    - access_token (str): The access token for authentication with the Shopify API.
+    - blog_id (str): The ID of the blog from which to fetch articles.
+    - initial_max_date (str): The ISO 8601 formatted date from which to start fetching articles.
+      For 'backward', articles before this date are fetched; for 'forward', articles after this date.
+    - direction (str): The direction to fetch articles, either 'backward' or 'forward'.
+      Default is 'backward'.
+
+    Returns:
+    - all_articles (list): A list of unique articles fetched from the Shopify store.
+
+    Raises:
+    - Exception: If the request to Shopify API fails.
+
+    Note:
+    - This function requires the 'requests' library. Install it via 'pip install requests' if necessary.
+    - Ensure that 'access_token' and 'store_url' are correct to avoid unauthorized errors.
+    - Adjust the 'sleep' duration if you encounter rate-limiting issues with the Shopify API.
+    """
+    
+    all_articles = []  # To hold all the fetched articles
+    article_ids = set()  # To track the IDs of articles already added to avoid duplicates
+    max_date = initial_max_date  # The initial date to start fetching articles from
+    limit = 250  # Shopify's limit for the number of articles per request
+    last_article_id = None  # To track the ID of the last article fetched in the previous batch
+
+    while True:
+        # Fetch a batch of articles from Shopify
+        batch = get_articles_by_published_date(store_url, access_token, blog_id, max_date, limit)
+        articles = batch.get('articles', [])
+
+        # If no articles were returned or the last article is the same as before, stop fetching
+        if not articles or (last_article_id == articles[-1]['id']):
+            break
+
+        # Add each new article to the all_articles list and its ID to the article_ids set
+        for article in articles:
+            article_id = article['id']
+            if article_id not in article_ids:
+                all_articles.append(article)
+                article_ids.add(article_id)
+
+        # Update the last_article_id and max_date for the next batch fetch
+        last_article_id = articles[-1]['id']
+        last_article_date = articles[-1]['published_at']
+        last_article_datetime = datetime.strptime(last_article_date, '%Y-%m-%dT%H:%M:%S%z')
+        if direction == 'backward':
+            max_date = (last_article_datetime - timedelta(seconds=1)).isoformat()
+        elif direction == 'forward':
+            max_date = (last_article_datetime + timedelta(seconds=1)).isoformat()
+
+        print(len(all_articles))  # Print the number of articles fetched so far
+        sleep(1)  # Sleep to avoid hitting the rate limit of the Shopify API
+
+    return all_articles
+
