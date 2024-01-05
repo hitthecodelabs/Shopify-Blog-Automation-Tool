@@ -593,3 +593,79 @@ def get_all_articles_improved(store_url, access_token, blog_id, initial_max_date
 
     return all_articles
 
+def get_all_articles_combined(store_url, access_token, blog_id, initial_max_date):
+    """
+    Retrieves all unique articles from a Shopify blog by fetching articles in both forward and backward directions
+    relative to an initial date. It avoids duplicates and ensures each article is counted only once.
+
+    Parameters:
+    - store_url (str): The base URL of the Shopify store.
+    - access_token (str): The access token for authentication with the Shopify API.
+    - blog_id (str): The ID of the blog from which to fetch articles.
+    - initial_max_date (str): The ISO 8601 formatted date from which to start fetching articles in both directions.
+
+    Returns:
+    - all_articles (list): A list of unique articles fetched from the Shopify store.
+
+    Raises:
+    - Exception: If the request to Shopify API fails.
+
+    Note:
+    - This function requires the 'requests' library. Install it via 'pip install requests' if necessary.
+    - Ensure that 'access_token' and 'store_url' are correct to avoid unauthorized errors.
+    - The 'sleep' function is used to avoid hitting the rate limit of the Shopify API. Adjust as necessary.
+    """
+    
+    all_articles = []  # To hold all the fetched articles
+    article_ids = set()  # To track the IDs of articles already added to avoid duplicates
+    max_date_backward = initial_max_date  # The initial date to start fetching articles backward from
+    max_date_forward = initial_max_date  # The initial date to start fetching articles forward from
+    limit = 250  # Shopify's limit for the number of articles per request
+    last_article_id_backward = None  # To track the ID of the last article fetched in the backward direction
+    last_article_id_forward = None  # To track the ID of the last article fetched in the forward direction
+
+    while True:
+        # Fetch a batch of articles in the backward direction from Shopify
+        batch_backward = get_articles_by_published_date(store_url, access_token, blog_id, max_date_backward, limit)
+        articles_backward = batch_backward.get('articles', [])
+        sleep(1)  # Sleep to avoid hitting the rate limit
+
+        # Fetch a batch of articles in the forward direction from Shopify
+        batch_forward = get_articles_by_published_date(store_url, access_token, blog_id, max_date_forward, limit)
+        articles_forward = batch_forward.get('articles', [])
+        sleep(1)  # Sleep to avoid hitting the rate limit
+
+        # If no more articles are returned in both directions, stop fetching
+        if (not articles_backward or last_article_id_backward == articles_backward[-1]['id']) and \
+           (not articles_forward or last_article_id_forward == articles_forward[-1]['id']):
+            break
+
+        # Add each new article from the backward batch to the all_articles list and its ID to the article_ids set
+        for article in articles_backward:
+            article_id = article['id']
+            if article_id not in article_ids:
+                all_articles.append(article)
+                article_ids.add(article_id)
+
+        # Add each new article from the forward batch to the all_articles list and its ID to the article_ids set
+        for article in articles_forward:
+            article_id = article['id']
+            if article_id not in article_ids:
+                all_articles.append(article)
+                article_ids.add(article_id)
+
+        # Update the last_article_ids and max_dates for both directions
+        if articles_backward:
+            last_article_id_backward = articles_backward[-1]['id']
+            last_backward_date = datetime.strptime(articles_backward[-1]['published_at'], '%Y-%m-%dT%H:%M:%S%z')
+            max_date_backward = (last_backward_date - timedelta(seconds=1)).isoformat()
+
+        if articles_forward:
+            last_article_id_forward = articles_forward[-1]['id']
+            last_forward_date = datetime.strptime(articles_forward[-1]['published_at'], '%Y-%m-%dT%H:%M:%S%z')
+            max_date_forward = (last_forward_date + timedelta(seconds=1)).isoformat()
+
+        print(len(all_articles))  # Print the number of unique articles fetched so far
+
+    return all_articles
+
