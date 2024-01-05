@@ -2,6 +2,7 @@ import re
 import json
 import requests
 import tiktoken
+from time import sleep
 from openai import OpenAI
 from urllib.parse import urlparse
 
