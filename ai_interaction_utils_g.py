@@ -1,4 +1,4 @@
-def generate_content_google(model_name, prompt, show_output=False, show_tokens=False):
+def generate_content(model_name, prompt, show_output=False, show_tokens=False):
     """
     Generates content using Google's AI models (Bison, Unicorn, Gemini).
 
