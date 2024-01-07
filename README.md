@@ -1,17 +1,17 @@
 # Shopify Blog Automation Tool
 
 ## Description
-The Shopify Blog Automation Tool is a Python script designed to facilitate the automation and management of blogs and articles within a Shopify store. Utilizing the Shopify Admin API, this script offers a convenient way to interact with various blog-related endpoints, enabling tasks such as retrieving blog details, creating blogs with custom metafields, and managing articles.
+The Shopify Blog Automation Tool is a comprehensive Python suite designed to streamline and automate the management of blogs and articles within Shopify stores. It harnesses the power of the Shopify Admin API, offering a robust set of functionalities to interact with various blog-related endpoints efficiently. This toolkit simplifies tasks such as article creation, update, deletion, and retrieval, along with validating and formatting content, thereby enhancing productivity and management ease..
 
 Useful References:
 - [Shopify API Documentation](https://shopify.dev/)
 - [API Rate Limits](https://shopify.dev/docs/api/admin-rest#rate_limits)
 
 ## Features
-- **Retrieve Blog Details**: Fetch all blog entries from your Shopify store.
-- **Create Blogs with Metafields**: Enhance blog entries with additional metafield information.
-- **Article Management**: Streamline the process of creating and retrieving articles.
-- **Count Articles**: Quickly determine the number of articles within a specific blog.
+- **Advanced Article Management**: Comprehensive tools for creating, updating, deleting, and retrieving articles, along with dynamic validation and formatting.
+- **Efficient Token and Pricing Calculations**: Estimate the usage and cost associated with AI-generated content.
+- **Robust URL and Content Validation**: Ensure the integrity and correctness of URLs and content with advanced validation techniques.
+- **Bulk Article Retrieval and Management**: Retrieve and manage articles en masse with improved functionality, catering to both forward and backward directions relative to a specific date.
 
 ## Installation
 
@@ -23,30 +23,34 @@ cd Shopify-Blog-Automation-Tool
 ```
 
 ## Usage
-Ensure you have the necessary Shopify API credentials and store information before running the scripts. Set up your environment with the store URL and access token.
+Before utilizing the scripts, ensure you possess the necessary Shopify API credentials and store details. Configure your environment with the appropriate store URL and access token.
 
 Functions overview:
 
-- `get_blogs(store_url, access_token)`: Retrieves all blogs from the Shopify store.
-- `create_blog_with_metafields(store_url, access_token, title, key, value, type, namespace)`: Creates a new blog with specified metafields.
-- `create_article(store_url, access_token, blog_id, title, author, tags, body_html)`: Creates a new article in a specified blog.
-- `get_articles(store_url, access_token, blog_id)`: Retrieves all articles from a specified blog.
-- `get_article_count(store_url, access_token, blog_id)`: Retrieves the count of articles in a specified blog.
+- `generate_content(client, messages, model)`: Interacts with an OpenAI model to generate responses based on a series of messages.
+- `calculate_pricing(input_tokens, output_tokens, model_name)`: Estimates the cost of using an AI model based on the number of input and output tokens.
+- `validate_and_retry(client, messages, model, expected_keys)`: Validates the generated content based on expected structure and elements, with retry capability.
+- `make_product_link(text, url, product)`: Formats and converts a product name in text into a clickable HTML link.
+- `validate_store_url(url)`: Performs intense checks to ensure the store URL's correctness and security.
+- `create_or_replace_article_(admin_store_url, blog_id, access_token, ...)`: Creates a new article or replaces an existing one in a specified blog.
+- `get_all_articles_combined(store_url, access_token, blog_id, initial_max_date)`: Retrieves all unique articles by fetching in both forward and backward directions relative to a specified date.
 
 Example usage:
 
 ```python
-from shopify_blog_manager import get_blogs, create_article
+from shopify_blog_manager import validate_store_url, create_article
 
-store_url = "https://example.myshopify.com"
+store_url = validate_store_url("https://example.myshopify.com")
 access_token = "your_access_token"
 
-# List all blogs
-print(get_blogs(store_url, access_token))
-
-# Create a new article
+# Validate and create a new article
 blog_id = "your_blog_id"
-create_article(store_url, access_token, blog_id, "New Article", "John Doe", "News, Updates", "<p>Content of the article.</p>")
+title = "Innovative Strategies"
+author = "Jane Smith"
+tags = "Business, Innovation"
+content = "<p>Discover groundbreaking business strategies.</p>"
+
+create_article(store_url, access_token, blog_id, title, author, tags, content)
 ```
 
 ## Contributing
