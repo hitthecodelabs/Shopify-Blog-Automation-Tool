@@ -46,7 +46,7 @@ access_token = "your_access_token"
 # Validate and create a new article
 blog_id = "your_blog_id"
 title = "Innovative Strategies"
-author = "Jane Smith"
+author = "Jean Paul"
 tags = "Business, Innovation"
 content = "<p>Discover groundbreaking business strategies.</p>"
 
