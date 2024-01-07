@@ -1,3 +1,9 @@
+import json
+
+import vertexai
+from vertexai.language_models import TextGenerationModel
+from vertexai.preview.generative_models import GenerativeModel
+
 def generate_content(model_name, prompt, show_output=False, show_tokens=False):
     """
     Generates content using Google's AI models (Bison, Unicorn, Gemini).
