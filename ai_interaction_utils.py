@@ -542,6 +542,34 @@ def create_or_replace_article_(admin_store_url, blog_id, access_token, new_title
     # Create the new article
     create_article_(admin_store_url, blog_id, access_token, new_title, img_url, img_alt, tags, html_content, author)
 
+def get_articles_by_published_date(store_url, access_token, blog_id, max_date, limit):
+    """
+    Retrieves a list of articles from a specific Shopify blog that were published before a specified date.
+
+    Args:
+    - store_url (str): The URL of the Shopify store.
+    - access_token (str): The access token for authenticating with the Shopify API.
+    - blog_id (int): The ID of the blog from which to retrieve articles.
+    - max_date (str): The maximum publication date for articles to retrieve. Articles published after this date will not be included. The date should be in ISO 8601 format (e.g., '2024-01-10T10:00:00-05:00').
+    - limit (int): The maximum number of articles to retrieve.
+
+    Returns:
+    - dict: A dictionary containing the JSON response with the list of articles if the request is successful.
+
+    Raises:
+    - Exception: If the request to the Shopify API fails, an exception is raised with the error code and message.
+
+    Example usage:
+    articles = get_articles_by_published_date('https://example.myshopify.com', 'your-access-token', 123, '2024-01-10T10:00:00-05:00', 10)
+    """
+
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    response = requests.get(f"{store_url}/admin/api/2023-10/blogs/{blog_id}/articles.json?limit={limit}&published_at_max={max_date}", headers=headers)
+    if response.status_code == 200:
+        return response.json()  # Returns the list of articles
+    else:
+        raise Exception(f"Error: {response.status_code}, {response.text}")  # Raises an exception if something goes wrong
+
 def get_all_articles_improved(store_url, access_token, blog_id, initial_max_date, direction='backward'):
     """
     Retrieves all articles from a Shopify blog in a specified direction relative to an initial date.
