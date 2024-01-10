@@ -532,6 +532,34 @@ def get_articles(store_url, access_token, blog_id):
         # Raises an exception if something goes wrong
         raise Exception(f"Error: {response.status_code}, {response.text}")
 
+def count_articles_in_blog(store_url, access_token, blog_id):
+    """
+    Counts the number of articles in a specific blog on a Shopify store.
+
+    Args:
+    - store_url (str): The URL of the Shopify store.
+    - access_token (str): The access token for authenticating with the Shopify API.
+    - blog_id (int): The ID of the blog for which the article count is required.
+
+    Returns:
+    - dict: A dictionary containing the JSON response with the count of articles if the request is successful.
+
+    Raises:
+    - Exception: If the request to the Shopify API fails, an exception is raised with the error code and message.
+
+    Example usage:
+    article_count = count_articles_in_blog('https://example.myshopify.com', 'your-access-token', 241253187)
+    """
+
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    url = f"{store_url}/admin/api/2024-01/blogs/{blog_id}/articles/count.json"
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()  # Returns the count of articles
+    else:
+        raise Exception(f"Error: {response.status_code}, {response.text}")  # Raises an exception if something goes wrong
+
 def create_or_replace_article_(admin_store_url, blog_id, access_token, new_title, img_url, img_alt, tags, html_content, author, article_handle):
     """
     Creates a new article or replaces an existing one with the same handle in a specified blog on the Shopify store.
