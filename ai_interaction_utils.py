@@ -472,6 +472,35 @@ def delete_article(store_url, access_token, blog_id, article_id):
         # Raises an exception if something goes wrong
         raise Exception(f"Error: {response.status_code}, {response.text}")
 
+def get_specific_article(store_url, access_token, blog_id, article_id):
+    """
+    Retrieves a specific article from a Shopify blog based on the article ID.
+
+    Args:
+    - store_url (str): The URL of the Shopify store.
+    - access_token (str): The access token for authenticating with the Shopify API.
+    - blog_id (int): The ID of the blog that contains the article.
+    - article_id (int): The ID of the article to retrieve.
+
+    Returns:
+    - dict: A dictionary containing the JSON response with the article details if the request is successful.
+
+    Raises:
+    - Exception: If the request to the Shopify API fails, an exception is raised with the error code and message.
+
+    Example usage:
+    article = get_specific_article('https://example.myshopify.com', 'your-access-token', 241253187, 134645308)
+    """
+
+    headers = {"X-Shopify-Access-Token": access_token, "Content-Type": "application/json"}
+    url = f"{store_url}/admin/api/2024-01/blogs/{blog_id}/articles/{article_id}.json"
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()  # Returns the article details
+    else:
+        raise Exception(f"Error: {response.status_code}, {response.text}")  # Raises an exception if something goes wrong
+
 def get_articles(store_url, access_token, blog_id):
     """
     Retrieves the list of articles from a specified blog on the Shopify store using the Shopify Admin API.
