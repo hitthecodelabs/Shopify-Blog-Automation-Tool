@@ -816,3 +816,24 @@ def update_shopify_article(store_url, access_token, blog_id, article_id, title, 
         # Raise an exception if something went wrong
         raise Exception(f"Error: {response.status_code}, {response.text}")
 
+def get_specific_products_from_shopify(store_url, access_token, product_ids):
+    """
+    Get specific products by IDs from a Shopify store.
+
+    :param store_url: URL of the Shopify store
+    :param access_token: The Shopify API access token
+    :param product_ids: List of product IDs to retrieve
+    :return: A response object containing the API response
+    """
+    # Convert list of IDs to a comma-separated string
+    ids_string = ','.join(map(str, product_ids))
+
+    # Prepare the URL and headers
+    url = f"https://{store_url}/admin/api/2024-01/products.json?ids={ids_string}"
+    headers = {
+        "X-Shopify-Access-Token": access_token
+    }
+
+    # Make the GET request and return the JSON response
+    return requests.get(url, headers=headers).json()
+
