@@ -829,7 +829,7 @@ def get_specific_products_from_shopify(store_url, access_token, product_ids):
     ids_string = ','.join(map(str, product_ids))
 
     # Prepare the URL and headers
-    url = f"https://{store_url}/admin/api/2024-01/products.json?ids={ids_string}"
+    url = f"{store_url}/admin/api/2024-01/products.json?ids={ids_string}"
     headers = {
         "X-Shopify-Access-Token": access_token
     }
