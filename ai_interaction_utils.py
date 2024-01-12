@@ -838,3 +838,66 @@ def get_specific_products_from_shopify(store_url, access_token, product_ids):
     # Make the GET request and return the JSON response
     return requests.get(url, headers=headers).json()
 
+def get_all_shopify_products(store_url, access_token):
+    """
+    Fetches all products from a Shopify store using the Shopify REST API.
+
+    This function handles pagination automatically to retrieve all products
+    from the store. It makes use of the 'Link' header in the API response
+    to find the next page of products, if available.
+
+    Parameters:
+    store_url (str): The base URL of the Shopify store.
+    access_token (str): The access token for Shopify API authentication.
+
+    Returns:
+    list: A list of dictionaries, where each dictionary represents a product.
+
+    Raises:
+    Exception: If the API request fails with a status code other than 200.
+    """
+
+    base_url = f"{store_url}/admin/api/2024-01/products.json?limit=250"
+    headers = {'X-Shopify-Access-Token': access_token}
+    all_products = []
+
+    def get_next_page_link(link_header):
+        """
+        Parses the 'Link' header to find the URL for the next page of products.
+
+        Parameters:
+        link_header (str): The 'Link' header content from the API response.
+
+        Returns:
+        str or None: The URL for the next page if available, otherwise None.
+        """
+        links = link_header.split(',')
+        for link in links:
+            if 'rel="next"' in link:
+                return link.split(';')[0].strip('<> ')
+        return None
+
+    # Initial request
+    response = requests.get(base_url, headers=headers)
+    while True:
+        if response.status_code != 200:
+            raise Exception(f"Error: {response.status_code}, {response.text}")
+
+        # Process response
+        data = response.json()
+        all_products.extend(data['products'])
+        print(len(all_products))  # Prints the cumulative count of products
+
+        # Check for next page
+        link_header = response.headers.get('Link')
+        if link_header:
+            next_page_url = get_next_page_link(link_header)
+            if next_page_url:
+                response = requests.get(next_page_url, headers=headers)
+                sleep(0.4)  # Sleep to avoid hitting the rate limit
+            else:
+                break
+        else:
+            break
+
+    return all_products
