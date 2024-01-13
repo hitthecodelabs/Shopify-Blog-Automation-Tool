@@ -901,6 +901,7 @@ def get_all_shopify_products(store_url, access_token):
             break
 
     return all_products
+
 def get_shopify_product_count(store_url, access_token):
     """
     Fetches the count of products from a Shopify store.
