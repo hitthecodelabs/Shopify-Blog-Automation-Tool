@@ -901,3 +901,37 @@ def get_all_shopify_products(store_url, access_token):
             break
 
     return all_products
+def get_shopify_product_count(store_url, access_token):
+    """
+    Fetches the count of products from a Shopify store.
+
+    This function sends a GET request to the Shopify REST API to retrieve
+    the total number of products in the specified Shopify store.
+
+    Parameters:
+    store_url (str): The base URL of the Shopify store, e.g., 'https://your-development-store.myshopify.com'.
+    access_token (str): The access token for Shopify API authentication.
+
+    Returns:
+    int: The total number of products in the Shopify store.
+
+    Raises:
+    Exception: If the API request fails or if the response is not as expected.
+    """
+
+    api_url = f"{store_url}/admin/api/2024-01/products/count.json"
+    headers = {'X-Shopify-Access-Token': access_token}
+
+    response = requests.get(api_url, headers=headers)
+
+    if response.status_code != 200:
+        raise Exception(f"Error: {response.status_code}, {response.text}")
+
+    try:
+        count = response.json().get('count')
+        if count is not None:
+            return count
+        else:
+            raise ValueError("Invalid response format: 'count' key not found.")
+    except ValueError as e:
+        raise Exception(f"Error parsing response: {e}")
