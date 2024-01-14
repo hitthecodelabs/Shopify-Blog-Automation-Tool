@@ -137,13 +137,15 @@ input[type="password"]:focus {
 
 .spinner-container {
     display: flex;
-    justify-content: center; /* Center content horizontally */
-    align-items: center;     /* Center content vertically */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Adjusts the position to truly center */
-    /* Remove width and height if using transform for centering */
+    align-items: center;
+    justify-content: center;
+}
+
+.load-product-action {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the items horizontally */
+    gap: 10px; /* Space between the button and spinner */
 }
 
 @keyframes spin {
