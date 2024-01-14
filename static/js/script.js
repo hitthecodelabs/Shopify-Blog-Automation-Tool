@@ -1,14 +1,16 @@
 function fetchProductCount() {
-    // Show loading indicator
+    // Show loading indicator and message
     document.getElementById('loadingIndicator').style.display = 'block';
+    document.getElementById('loadingMessage').style.display = 'block';
     document.getElementById('productCount').innerText = ''; // Clear previous product count
 
     fetch('/get_product_count')
         .then(response => response.json())
         .then(data => {
-            // Hide loading indicator and the "Load Product Count" button
+            // Hide loading indicator, the "Load Product Count" button, and the loading message
             document.getElementById('loadingIndicator').style.display = 'none';
             document.getElementById('loadProductCountButton').style.display = 'none';
+            document.getElementById('loadingMessage').style.display = 'none';
 
             if (data.error) {
                 alert(data.error);
@@ -19,8 +21,9 @@ function fetchProductCount() {
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while fetching product count');
-            // Hide loading indicator
+            // Hide loading indicator and message
             document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('loadingMessage').style.display = 'none';
         });
 }
 
