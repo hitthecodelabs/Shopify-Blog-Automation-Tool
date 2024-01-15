@@ -82,6 +82,53 @@ async function processAndSaveProducts() {
     }
 }
 
+document.getElementById('searchInput').addEventListener('input', function(event) {
+    const query = event.target.value;
+    if (query.length > 1) { // Fetch suggestions for queries longer than 2 characters
+        fetch(`/search_products?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(suggestions => {
+                displaySuggestions(suggestions);
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        clearSuggestions();
+    }
+});
+
+function displaySuggestions(suggestions) {
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+    suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+
+    suggestions.forEach(title => {
+        const suggestionElement = document.createElement('div');
+        suggestionElement.classList.add('suggestion-item');
+        suggestionElement.textContent = title;
+        suggestionElement.onclick = () => selectSuggestion(title);
+        suggestionsContainer.appendChild(suggestionElement);
+    });
+}
+
+function clearSuggestions() {
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+    suggestionsContainer.innerHTML = '';
+}
+
+
+function selectSuggestion(title) {
+    document.getElementById('searchInput').value = title; // Set the selected suggestion as the search input value
+    clearSuggestions();
+
+    // Optionally,fetch the detailed product info based on the selected title if needed
+    fetch(`/get_product_details?title=${encodeURIComponent(title)}`)
+.then(response => response.json())
+.then(productDetails => {
+// Handle the product details (display them or use them in some way)
+console.log(productDetails);
+})
+.catch(error => console.error('Error:', error));
+}
+
 // Event listener for theme preference on page load
 document.addEventListener('DOMContentLoaded', (event) => {
     const storedTheme = localStorage.getItem('theme');
