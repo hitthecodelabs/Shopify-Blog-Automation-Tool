@@ -409,9 +409,9 @@ def get_shopify_products_batch(store_url, access_token, next_page_url=None):
 
     data = response.json()
     products = data['products']
-    products = [{"id":i['id'], "title":i['title'], "body_html":i['body_html'], "tags":i['tags'], "status":i['status'], "options":i['options'], "handle":i['handle']} 
+    products2 = [{"id":i['id'], "title":i['title'], "body_html":i['body_html'], "tags":i['tags'], "status":i['status'], "options":i['options'], "handle":i['handle']} 
                 for i in products]
     next_page_url = get_next_page_link(response.headers.get('Link'))
 
-    return products, next_page_url
+    return products2, next_page_url
 
