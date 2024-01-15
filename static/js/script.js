@@ -48,7 +48,6 @@ function updateLoadingIndicator(progress) {
     progressBar.style.width = `${progress}%`;
 }
 
-// Load products and update the progress bar
 async function loadProducts() {
     document.getElementById('progressBarContainer').style.display = 'block';
     let next_page_url = null;
@@ -63,10 +62,24 @@ async function loadProducts() {
             break;
         }
         next_page_url = data.next_page_url;
-        updateLoadingIndicator(data.progress);  // Update progress bar
+        updateLoadingIndicator(data.progress); // Update progress bar
     }
 
+    // Process and save products after loading is complete
+    await processAndSaveProducts();
     document.getElementById('progressBarContainer').style.display = 'none';
+}
+
+async function processAndSaveProducts() {
+    const response = await fetch('/process_and_save_products');
+    const data = await response.json();
+    if (data.error) {
+        console.error('Error processing products:', data.error);
+        alert('An error occurred while processing products');
+    } else {
+        console.log('Products processed and saved successfully');
+        // Post-processing actions
+    }
 }
 
 // Event listener for theme preference on page load
