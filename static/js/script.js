@@ -82,17 +82,27 @@ async function processAndSaveProducts() {
     }
 }
 
-document.getElementById('searchInput').addEventListener('input', function(event) {
-    const query = event.target.value;
-    if (query.length > 1) { // Fetch suggestions for queries longer than 2 characters
-        fetch(`/search_products?query=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(suggestions => {
-                displaySuggestions(suggestions);
-            })
-            .catch(error => console.error('Error:', error));
-    } else {
-        clearSuggestions();
+// Event listener for theme preference on page load
+document.addEventListener('DOMContentLoaded', (event) => {
+    const storedTheme = localStorage.getItem('theme');
+    setTheme(storedTheme || 'light'); // Set to stored theme, or default to light
+
+    // Check if searchInput exists on the page before adding event listener
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(event) {
+            const query = event.target.value;
+            if (query.length > 1) { // Fetch suggestions for queries longer than 2 characters
+                fetch(`/search_products?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(suggestions => {
+                        displaySuggestions(suggestions);
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                clearSuggestions();
+            }
+        });
     }
 });
 
