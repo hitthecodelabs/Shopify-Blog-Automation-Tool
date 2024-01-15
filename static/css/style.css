@@ -92,10 +92,11 @@ input[type="password"]:focus {
     border-color: #3498db;
     outline: none;
 }
-/* New button class */
+
 .btn {
     background-color: #5dade2;
     /* background-color: var(--button-background); */
+    text-decoration: none; 
     color: white;
     padding: 18px 20px;
     border: none;
@@ -146,6 +147,29 @@ input[type="password"]:focus {
     align-items: center;
     justify-content: center; /* Center the items horizontally */
     gap: 10px; /* Space between the button and spinner */
+}
+
+.create-post-action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Space above the create post button */
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    margin-top: 10px;
+    height: 20px;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4caf50;
+    width: 0%; /* Initial width */
+    border-radius: 5px;
+    transition: width 0.4s ease;
 }
 
 @keyframes spin {
