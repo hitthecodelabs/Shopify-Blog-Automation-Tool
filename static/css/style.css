@@ -198,3 +198,12 @@ input[type="password"]:focus {
     --button-hover-background: #546e7a; /* Dark mode button hover */
     --border-color: #333; /* Dark mode border color */
 }
+
+.fade-transition {
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+.fade-visible {
+    opacity: 1;
+}
