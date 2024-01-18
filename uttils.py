@@ -2,6 +2,7 @@ import os
 import re
 import  json
 import requests
+import tempfile
 
 from time import sleep
 from bs4 import BeautifulSoup
@@ -415,3 +416,58 @@ def get_shopify_products_batch(store_url, access_token, next_page_url=None):
 
     return products2, next_page_url
 
+def process_product_data(session):
+    # Check if the file paths exist in session
+    products_file_path = session.get('products_file_path')
+    result_file_path = session.get('result_file_path')
+
+    if not products_file_path or not result_file_path:
+        return {"error": "File paths are missing."}, 400
+
+    # Read and parse the JSON data from the files
+    try:
+        with open(products_file_path, 'r', encoding='utf-8') as file:
+            products = json.load(file)
+        with open(result_file_path, 'r', encoding='utf-8') as file:
+            result = json.load(file)
+    except Exception as e:
+        return {"error": f"Failed to read files: {str(e)}"}, 500
+    
+    # Process the data
+    pp = {i['handle']: [i['id'], i['title'], i['body_html'], i['tags'], i['status'], i['options']] for i in products if i['status'] == 'active'}
+
+    result2, errors = {}, []
+    for r in result:
+        lista = result[r].copy()
+        img, p_link, _ = lista
+        handle = p_link.split("/")[-1]
+        title = " ".join(handle.split("-")).capitalize()
+
+        try:
+            p_id, titel, bhtml, tags, _, options = pp[handle]
+            result2[titel] = {"id": p_id, "body_html": bhtml, "product_url": p_link, 
+                              "handle": handle, "img": img, "tags": tags, "options": options}
+        except KeyError:
+            for key in pp:
+                ns = similar(handle, key)  # Make sure to define the similar function
+                if ns > 0.9:
+                    p_id, titel, bhtml, tags, _, options = pp[key]
+                    result2[titel] = {"id": p_id, "body_html": bhtml, "product_url": p_link, 
+                                      "handle": key, "img": img, "tags": tags, "options": options}
+            errors.append(handle)
+    
+    # First batch, create a new file and write products
+    _, presult2_file_path = tempfile.mkstemp(suffix='.json')
+    session['products_file_path'] = presult2_file_path
+    print(f"{presult2_file_path = }")
+    with open(presult2_file_path, 'w', encoding='utf8') as file:
+        json.dump(result2, file, ensure_ascii=False, indent=4)
+    
+    titulos = list(result2.keys()) ### titles list
+    _, titles_file_path = tempfile.mkstemp(suffix='.json')
+    session['titles_file_path'] = titles_file_path
+    print(f"{titles_file_path = }")
+    with open(titles_file_path, 'w', encoding='utf8') as file:
+        json.dump(titulos, file, ensure_ascii=False, indent=4)
+    
+    return result2, errors
