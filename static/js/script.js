@@ -11,36 +11,75 @@ function setTheme(theme) {
     localStorage.setItem('theme', theme);
 }
 
-// Show and hide spinner while loading data
+function handleCreatePostButtonDisplay(n_products) {
+    const createNewPostButtonElement = document.getElementById('createNewPostButton');
+    if (createNewPostButtonElement) {
+        if (n_products > 0) {
+            createNewPostButtonElement.classList.add('fade-visible');
+        } else {
+            createNewPostButtonElement.classList.remove('fade-visible');
+        }
+    }
+}
+
 function fetchProductCount() {
-    // Show loading indicator and message
+    // Show loading indicator
     document.getElementById('loadingIndicator').style.display = 'block';
-    document.getElementById('loadingMessage').style.display = 'block';
-    document.getElementById('productCount').innerText = ''; // Clear previous product count
+    const loadingMessageElement = document.getElementById('loadingMessage');
+    const productCountElement = document.getElementById('productCount');
+    const loadProductCountButtonElement = document.getElementById('loadProductCountButton');
+    const createNewPostButtonElement = document.getElementById('createNewPostButton');
+
+    // Show loading message if it exists
+    if (loadingMessageElement) loadingMessageElement.style.display = 'block';
+
+    // Clear previous product count if productCount element exists
+    if (productCountElement) productCountElement.innerText = ''; 
 
     fetch('/get_product_count')
         .then(response => response.json())
         .then(data => {
-            // Hide loading indicator, the "Load Product Count" button, and the loading message
+            // Hide loading indicator and message
             document.getElementById('loadingIndicator').style.display = 'none';
-            document.getElementById('loadProductCountButton').style.display = 'none';
-            document.getElementById('loadingMessage').style.display = 'none';
+            if (loadingMessageElement) loadingMessageElement.style.display = 'none';
+            if (loadProductCountButtonElement) loadProductCountButtonElement.style.display = 'none';
 
             if (data.error) {
                 alert(data.error);
             } else {
-                document.getElementById('productCount').innerText = 'Number of products in your store: ' + data.n_products;
-                document.getElementById('createNewPostButton').style.display = 'block'; // Show the create new post button
+                // Update product count if element exists
+                if (productCountElement) productCountElement.innerText = 'Number of products in your store: ' + data.n_products;
+
+                // Call the new function with the fetched product count
+                handleCreatePostButtonDisplay(data.n_products);
+            }
+
+            if (!data.error && data.n_products > 0) {
+                // Hide 'Load Products' button and show 'Create New Blog Post' button
+                loadProductCountButtonElement.style.display = 'none';
             }
         })
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while fetching product count');
+
             // Hide loading indicator and message
             document.getElementById('loadingIndicator').style.display = 'none';
-            document.getElementById('loadingMessage').style.display = 'none';
+            if (loadingMessageElement) loadingMessageElement.style.display = 'none';
         });
 }
+
+function checkInitialProductCount(n_products) {
+    if (n_products > 0) {
+        handleCreatePostButtonDisplay(n_products);
+        document.getElementById('loadProductCountButton').style.display = 'none';
+    } else {
+        document.getElementById('createNewPostButton').style.display = 'none';
+        document.getElementById('loadProductCountButton').style.display = 'block';
+    }
+}
+
+window.onload = checkInitialProductCount;
 
 // Update the progress bar based on loading progress
 function updateLoadingIndicator(progress) {
@@ -124,19 +163,17 @@ function clearSuggestions() {
     suggestionsContainer.innerHTML = '';
 }
 
-
 function selectSuggestion(title) {
     document.getElementById('searchInput').value = title; // Set the selected suggestion as the search input value
     clearSuggestions();
 
     // Optionally,fetch the detailed product info based on the selected title if needed
     fetch(`/get_product_details?title=${encodeURIComponent(title)}`)
-.then(response => response.json())
-.then(productDetails => {
-// Handle the product details (display them or use them in some way)
-console.log(productDetails);
-})
-.catch(error => console.error('Error:', error));
+    .then(response => response.json())
+    .then(productDetails => {
+        // Handle the product details (display them or use them in some way)
+        console.log(productDetails);
+    }).catch(error => console.error('Error:', error));
 }
 
 // Event listener for theme preference on page load
