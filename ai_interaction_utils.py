@@ -30,7 +30,7 @@ def generate_content(client, messages, model='gpt-3.5-turbo-1106', show_output=F
     chat_completion = client.chat.completions.create(
             messages=messages,
             # max_tokens=600,  # Uncomment and adjust as necessary.
-            temperature=0.9,  # Adjust the randomness of the output (0.0-1.0).
+            temperature=0.0,  # Adjust the randomness of the output (0.0-1.0).
             model=model,  # Model to use for completion.
             response_format={"type": "json_object"},  # The format of the response.
         )
