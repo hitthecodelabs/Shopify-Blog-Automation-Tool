@@ -384,6 +384,41 @@ def validate_store_url(url):
 
     return url
 
+def get_blogs(store_url, access_token):
+    """
+    Fetches a list of blogs from a Shopify store.
+
+    This function makes an HTTP GET request to the Shopify API to retrieve the list of blogs
+    associated with a specific store. It requires the store's URL and an access token for
+    authentication.
+
+    Parameters:
+    store_url (str): The base URL of the Shopify store.
+    access_token (str): The access token for authenticating with the Shopify API.
+
+    Returns:
+    dict: A dictionary containing the list of blogs if the request is successful.
+
+    Raises:
+    Exception: An exception with error details if the request fails.
+    """
+
+    # Headers for the API request, including the access token for authentication
+    headers = {
+        "X-Shopify-Access-Token": access_token, 
+        "Content-Type": "application/json"
+    }
+
+    # Sending a GET request to the Shopify API to fetch the blogs
+    response = requests.get(f"{store_url}/admin/api/2023-10/blogs.json", headers=headers)
+
+    # Checking if the response status code is 200 (OK)
+    if response.status_code == 200:
+        return response.json()  # Returns the list of blogs in JSON format
+    else:
+        # Raises an exception if the response status code is not 200
+        raise Exception(f"Error: {response.status_code}, {response.text}")
+
 def create_article(admin_store_url, blog_id, access_token, new_title, img_url, img_alt, tags, html_content, author):
     """
     Creates an article with an image in a specified blog on the Shopify store using the Shopify Admin API.
