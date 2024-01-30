@@ -1,7 +1,7 @@
 # Shopify Blog Automation Tool
 
 ## Description
-The Shopify Blog Automation Tool is a comprehensive Python suite designed to streamline and automate the management of blogs and articles within Shopify stores. It harnesses the power of the Shopify Admin API, offering a robust set of functionalities to interact with various blog-related endpoints efficiently. This toolkit simplifies tasks such as article creation, update, deletion, and retrieval, along with validating and formatting content, thereby enhancing productivity and management ease..
+The Shopify Blog Automation Tool is a comprehensive Flask app designed to streamline and automate the management of blogs and articles within Shopify stores. It harnesses the power of the Shopify Admin API, offering a robust set of functionalities to interact with various blog-related endpoints efficiently. This toolkit simplifies tasks such as article creation, update, deletion, and retrieval, along with validating and formatting content, thereby enhancing productivity and management ease..
 
 Useful References:
 - [Shopify API Documentation](https://shopify.dev/)
