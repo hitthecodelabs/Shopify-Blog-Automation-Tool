@@ -113,7 +113,7 @@ def calculate_pricing(input_tokens, output_tokens, model_name='gpt-4'):
     # Define the cost per 1,000 tokens for each model
     pricing = {
         'gpt-4': {'input_cost_per_1k': 0.01, 'output_cost_per_1k': 0.03},
-        'gpt-3.5': {'input_cost_per_1k': 0.001, 'output_cost_per_1k': 0.002}
+        'gpt-3.5': {'input_cost_per_1k': 0.0005, 'output_cost_per_1k': 0.0015}
     }
 
     # Check if the model_name is valid
