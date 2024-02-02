@@ -7,7 +7,7 @@ from time import sleep
 from openai import OpenAI
 from urllib.parse import urlparse
 
-def generate_content(client, messages, model='gpt-3.5-turbo-1106', show_output=False, show_tokens=False):
+def generate_content(client, messages, model='gpt-3.5-turbo-0125', show_output=False, show_tokens=False):
     """
     This function generates content by interacting with an OpenAI model specified by the user. 
     It sends messages to the model and retrieves the generated response in JSON format.
@@ -15,7 +15,7 @@ def generate_content(client, messages, model='gpt-3.5-turbo-1106', show_output=F
     Parameters:
     - client: The OpenAI API client instance to use for making requests.
     - messages: A list of message dicts representing the conversation history where each message contains a 'role' and 'content'.
-    - model: The identifier of the model to use for the chat completion. Default is 'gpt-3.5-turbo-1106'.
+    - model: The identifier of the model to use for the chat completion. Default is 'gpt-3.5-turbo-0125'.
     - show_output: If True, prints the content of the generated messages.
     - show_tokens: If True, prints the token usage information.
 
@@ -50,14 +50,14 @@ def generate_content(client, messages, model='gpt-3.5-turbo-1106', show_output=F
     # Return the generated content.
     return json_output
 
-def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
+def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0125"):
     """
     Returns the number of tokens used by a list of messages for a specific model.
 
     Parameters:
     - messages: A list of dictionaries representing the conversation. Each dictionary
                 should have keys like "role" and "content".
-    - model: A string specifying the AI model's version (default is "gpt-3.5-turbo-0613").
+    - model: A string specifying the AI model's version (default is "gpt-3.5-turbo-0125").
 
     Returns:
     - An integer representing the total number of tokens that the provided messages
