@@ -9,7 +9,7 @@ def generate_content(model_name, prompt, show_output=False, show_tokens=False):
     Generates content using Google's AI models (Bison, Unicorn, Gemini).
 
     Parameters:
-    - model_name: (str) The name of the model to use ('bison', 'unicorn', 'gemini').
+    - model_name: (str) The name of the model to use ('bison', 'unicorn', 'gemini-pro').
     - prompt: (str) The input text to generate content for.
     - show_output: (bool, optional) If True, print the generated content. Default is False.
     - show_tokens: (bool, optional) If True, print the token counts. Default is False.
