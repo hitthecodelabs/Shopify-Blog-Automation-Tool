@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from uttils import *
 
 app = Flask(__name__)
-app.secret_key = '' ### define the secret key here
+app.secret_key = 'zabcdefghijklmnopqrstuvwxyz_secret_key_zabcdefghijklmnopqrstuvwxyz'
 
 @app.route('/')
 def index():
