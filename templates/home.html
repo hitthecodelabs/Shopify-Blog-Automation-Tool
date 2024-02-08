@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Information{% endblock %}
+
+{% block content %}
+    <h1>Shopify Store Information</h1>
+    <div class="shop-info">
+        <p><strong>Owner:</strong> {{ shop_info.shop.shop_owner }}</p>
+        <p><strong>Shop Name:</strong> {{ shop_info.shop.name }}</p>
+        <p><strong>Domain:</strong> {{ shop_info.shop.domain }}</p>
+    </div>
+    <div class="button-container">
+        <!-- <a href="{{ url_for('logout') }}" class="btn">Back to Login</a> -->
+        <a href="{{ url_for('logout') }}" class="btn">Back to Login</a>
+        <a href="{{ url_for('load_products') }}" class="btn">Create Blog Post</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %} - Shopify Blog Creator</title>
+    <link rel="icon" href="{{ url_for('static', filename='icons/blog-32.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <script>
+        // Immediately set the theme on page load to prevent flash
+        (function() {
+            const storedTheme = localStorage.getItem('theme') || 'light'; // Default to light theme
+            document.documentElement.setAttribute('data-theme', storedTheme);
+        })();
+    </script>
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <button onclick="toggleTheme()">Dark Theme</button>
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}       
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
