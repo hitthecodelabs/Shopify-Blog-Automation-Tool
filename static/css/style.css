@@ -80,7 +80,8 @@ input[type="submit"]:hover {
     background-color: var(--button-hover-background);
 }
 input[type="password"] {
-    width: 100%;
+    /* width: 100%; */
+    width: calc(100% - 40px); /* Adjust width to account for padding/margin */
     padding: 18px;
     margin-bottom: 30px;
     /* border: 2px solid #d1d1d1; */
