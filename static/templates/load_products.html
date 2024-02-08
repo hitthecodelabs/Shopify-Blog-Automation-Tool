@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Create Blog Post{% endblock %}
+
+{% block content %}
+    <h1></h1>
+
+    <p id="productCount">Number of products in your store: {{ n_products }}</p>
+
+    <!-- Always display the Create New Blog Post button -->
+    <div class="create-post-action">
+        <button id="createNewPostButton" class="btn" onclick="location.href='/create_post'">Create New Blog Post</button>
+    </div>
+    
+    <div class="load-product-action">
+        <button id="loadProductCountButton" class="btn" onclick="fetchProductCount()">Load Products</button>
+        <div class="spinner-container" style="display: none;" id="loadingIndicator">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    <p id="loadingMessage" style="display: none;"><small></small></p>
+    
+    <button class="btn" onclick="location.href='/home'">Home</button>
+{% endblock %}
