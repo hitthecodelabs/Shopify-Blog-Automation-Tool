@@ -471,3 +471,4 @@ def process_product_data(session):
         json.dump(titulos, file, ensure_ascii=False, indent=4)
     
     return result2, errors
+    
