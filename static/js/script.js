@@ -13,12 +13,15 @@ function setTheme(theme) {
 
 function handleCreatePostButtonDisplay(n_products) {
     const createNewPostButtonElement = document.getElementById('createNewPostButton');
-    if (createNewPostButtonElement) {
-        if (n_products > 0) {
-            createNewPostButtonElement.classList.add('fade-visible');
-        } else {
-            createNewPostButtonElement.classList.remove('fade-visible');
-        }
+    const loadProductCountButtonElement = document.getElementById('loadProductCountButton');
+
+    // Display the "Create New Blog Post" button if there are products
+    if (n_products > 0) {
+        if (createNewPostButtonElement) createNewPostButtonElement.style.display = 'block';
+        if (loadProductCountButtonElement) loadProductCountButtonElement.style.display = 'none';
+    } else {
+        if (createNewPostButtonElement) createNewPostButtonElement.style.display = 'none';
+        if (loadProductCountButtonElement) loadProductCountButtonElement.style.display = 'block';
     }
 }
 
@@ -28,13 +31,12 @@ function fetchProductCount() {
     const loadingMessageElement = document.getElementById('loadingMessage');
     const productCountElement = document.getElementById('productCount');
     const loadProductCountButtonElement = document.getElementById('loadProductCountButton');
-    const createNewPostButtonElement = document.getElementById('createNewPostButton');
 
     // Show loading message if it exists
     if (loadingMessageElement) loadingMessageElement.style.display = 'block';
 
     // Clear previous product count if productCount element exists
-    if (productCountElement) productCountElement.innerText = ''; 
+    if (productCountElement) productCountElement.innerText = '';
 
     fetch('/get_product_count')
         .then(response => response.json())
@@ -42,21 +44,17 @@ function fetchProductCount() {
             // Hide loading indicator and message
             document.getElementById('loadingIndicator').style.display = 'none';
             if (loadingMessageElement) loadingMessageElement.style.display = 'none';
-            if (loadProductCountButtonElement) loadProductCountButtonElement.style.display = 'none';
 
             if (data.error) {
                 alert(data.error);
             } else {
                 // Update product count if element exists
-                if (productCountElement) productCountElement.innerText = 'Number of products in your store: ' + data.n_products;
+                if (productCountElement) {
+                    productCountElement.innerText = 'Number of products in your store: ' + data.n_products;
+                }
 
-                // Call the new function with the fetched product count
+                // This ensures we correctly handle visibility regardless of the fetched product count
                 handleCreatePostButtonDisplay(data.n_products);
-            }
-
-            if (!data.error && data.n_products > 0) {
-                // Hide 'Load Products' button and show 'Create New Blog Post' button
-                loadProductCountButtonElement.style.display = 'none';
             }
         })
         .catch(error => {
@@ -69,9 +67,14 @@ function fetchProductCount() {
         });
 }
 
-function checkInitialProductCount(n_products) {
+function checkInitialProductCount() {
+    // Assuming `n_products` is directly rendered into `productCount`'s text
+    let n_products_text = document.getElementById('productCount').innerText;
+    let n_products = parseInt(n_products_text.replace(/^\D+/g, '')); // Extracts number from string
+
+    // Now use this `n_products` value to determine which button to show
     if (n_products > 0) {
-        handleCreatePostButtonDisplay(n_products);
+        document.getElementById('createNewPostButton').style.display = 'block';
         document.getElementById('loadProductCountButton').style.display = 'none';
     } else {
         document.getElementById('createNewPostButton').style.display = 'none';
@@ -79,7 +82,9 @@ function checkInitialProductCount(n_products) {
     }
 }
 
-window.onload = checkInitialProductCount;
+window.onload = function() {
+    checkInitialProductCount();
+};
 
 // Update the progress bar based on loading progress
 function updateLoadingIndicator(progress) {
