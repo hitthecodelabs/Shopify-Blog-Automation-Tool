@@ -2,7 +2,7 @@ import os
 import json
 import logging
 import tempfile
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, get_flashed_messages
 
 from uttils import *
 
@@ -27,35 +27,28 @@ def home():
         access_token = request.form['access_token']
         shop_url = request.form['shop_url']
 
-        # Standardize the shop URL format
         if not shop_url.startswith('https://'):
             shop_url = 'https://' + shop_url
 
-        # Validate access token and shop URL
         try:
             shop_info = get_shop_info_from_shopify(shop_url, access_token)
             if 'shop' in shop_info:
-                # Store the entire shop_info object in session
                 session['shop_info'] = shop_info
                 session['access_token'] = access_token
                 return render_template('home.html', shop_info=shop_info)
             else:
-                # Invalid token or URL
-                return "Invalid token or URL. Please try again.", 400
+                flash("Invalid token or URL. Please try again.")
         except Exception as e:
-            # Handle exceptions (e.g., network errors)
-            return f"An error occurred: {e}", 500
+            flash("Invalid token or URL. Please try again.")
 
+        return redirect(url_for('index'))
     else:
-        # For GET requests, check if shop info is in session
         shop_info = session.get('shop_info')
         if shop_info:
-            # If shop info is available in session, render the home page with it
             return render_template('home.html', shop_info=shop_info)
         else:
-            # If no shop info in session, redirect to index page for new login
             return redirect(url_for('index'))
-        
+
 @app.route('/load_products')
 def load_products():
     # Check if 'n_products' exists in the session
