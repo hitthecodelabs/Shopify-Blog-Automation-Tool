@@ -5,6 +5,16 @@
 {% block content %}
     <h1>Welcome to the Shopify Blog Post Creator!</h1>
     <p>This is an app to create blog posts for Shopify stores.</p>
+    
+    <!-- Display flashed messages if they exist -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
     <form action="/home" method="post">
         <label for="shop_url">Enter your Shopify Admin Shop URL:</label>
         <input type="text" id="shop_url" name="shop_url" placeholder="example.myshopify.com" required>
